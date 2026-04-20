@@ -1,0 +1,491 @@
+[
+  {
+    "id": "7D171191-8406-409E-86B5-E42CDFCBBED6",
+    "title": "TECHNICAL FOUNDATION",
+    "checklists": [
+      {
+        "id": "EFDE08FF-C2E0-4280-8CF6-686EB74E59EE",
+        "title": "Basic statistics and probability",
+        "isComplete": false
+      },
+      {
+        "id": "0F5CA0F0-5D5F-4719-ABBE-E99A04020D09",
+        "title": "Basic linear algebra",
+        "isComplete": false
+      },
+      {
+        "id": "17C03085-C91C-49B4-9F15-9A54C14AC0F4",
+        "title": "Basic calculus",
+        "isComplete": false
+      },
+      {
+        "id": "1196DD8D-F2BD-40EE-A4F3-34DAFD1DA8B0",
+        "title": "Understanding of numerical precision formats",
+        "isComplete": false
+      },
+      {
+        "id": "338481A3-7642-4DD2-A336-AD46E668E212",
+        "title": "Data structures and algorithms fundamentals",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "A92F3A24-B56A-433D-A4B1-513202913665",
+    "title": "ML BASICS",
+    "checklists": [
+      {
+        "id": "8E343CB4-773A-41E9-A084-6B9F741F9949",
+        "title": "Understanding of supervised vs unsupervised learning",
+        "isComplete": false
+      },
+      {
+        "id": "A95402E6-3175-48D0-B5F2-B97DADC66211",
+        "title": "Common algorithms at a high level",
+        "isComplete": false
+      },
+      {
+        "id": "F2ED1AA9-A09E-434C-B58D-6BEBDEBA4EFA",
+        "title": "Model evaluation metrics",
+        "isComplete": false
+      },
+      {
+        "id": "2B843C52-3F7A-47A4-B6C2-828A26EE8519",
+        "title": "Training - validation - test splits",
+        "isComplete": false
+      },
+      {
+        "id": "F68C7D45-F0AD-4C10-A6D8-2E63A808C9FA",
+        "title": "Overfitting and underfitting",
+        "isComplete": false
+      },
+      {
+        "id": "CB4B32EC-A9F7-4AED-A3C5-6DC49FACFD1D",
+        "title": "Strong deep learning knowledge",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "85980DAA-97D1-49E6-9E1D-27EE284EE3BD",
+    "title": "SOFTWARE ENGINEERING",
+    "checklists": [
+      {
+        "id": "FAEE7825-FEA5-4F75-8305-90A51BF4308F",
+        "title": "Python programming",
+        "isComplete": false
+      },
+      {
+        "id": "284B5ABA-F968-4BF6-BDB4-80BAC9E972AF",
+        "title": "Linux and command-line tools",
+        "isComplete": false
+      },
+      {
+        "id": "4ED92093-CAD8-4208-AE22-6C5ED960DE94",
+        "title": "Git and version control",
+        "isComplete": false
+      },
+      {
+        "id": "9F9178DA-0903-4F7C-AEBD-402A55DAC3E3",
+        "title": "API design and integration",
+        "isComplete": false
+      },
+      {
+        "id": "BBC74191-FC59-4134-8490-6DC98C927187",
+        "title": "Basic understanding of Docker and containers",
+        "isComplete": false
+      },
+      {
+        "id": "C822B16C-1233-4C09-8090-75E409C8257C",
+        "title": "Cloud platforms",
+        "isComplete": false
+      },
+      {
+        "id": "6E178D41-347D-4E88-9F44-668D4B19C80D",
+        "title": "Monitoring and logging",
+        "isComplete": false
+      },
+      {
+        "id": "8699E9C2-55D8-4100-9CEB-9E57E7CD8054",
+        "title": "Testing",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "67CD5C88-CAAF-4290-9D92-DCD75D7151D2",
+    "title": "FOUNDATION MODELS AND MODEL SELECTION",
+    "checklists": [
+      {
+        "id": "999E9453-7FB3-43D6-A7CD-83538BCFCE76",
+        "title": "Transformer architecture",
+        "isComplete": false
+      },
+      {
+        "id": "AECBBEBD-CBE3-48AD-A079-29394C1E2F50",
+        "title": "Attention mechanism",
+        "isComplete": false
+      },
+      {
+        "id": "319820EC-4E20-4375-83C4-C9D19BFC8506",
+        "title": "Tokenization",
+        "isComplete": false
+      },
+      {
+        "id": "232670E7-5DAE-4726-A9E2-4D79A8C57D4C",
+        "title": "Post-training techniques - SFT, RLHF, DPO",
+        "isComplete": false
+      },
+      {
+        "id": "BE418246-F9E9-4F28-91C4-994B0B008E52",
+        "title": "Tradeoffs - cost vs performance vs licensing",
+        "isComplete": false
+      },
+      {
+        "id": "FCB9287E-E702-4275-8F2D-F04CD7AA53F7",
+        "title": "Open-weight vs open-source vs API models",
+        "isComplete": false
+      },
+      {
+        "id": "BD7BA385-FE47-4CF0-966C-AF701BBFFDA4",
+        "title": "Tooling for model benchmarking",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "40C22D05-6D00-410F-B87C-35ECA44E74DF",
+    "title": "EVALUATION AND TESTING",
+    "checklists": [
+      {
+        "id": "A8D8D051-85D3-493C-9381-28590F63F0DE",
+        "title": "Model evaluation pipelines",
+        "isComplete": false
+      },
+      {
+        "id": "427CBF50-481A-46EF-AD57-88018AC2DB61",
+        "title": "Evaluation metrics - perplexity, BLEU, ROUGE, semantic similarity, functional correctness, etc",
+        "isComplete": false
+      },
+      {
+        "id": "109E2CDA-2BD8-42C1-86CF-E55D44C1F672",
+        "title": "Using AI judges and human evals",
+        "isComplete": false
+      },
+      {
+        "id": "EA90CA03-AC9F-4338-9E9D-42A8E0EC9111",
+        "title": "Measuring hallucinations, toxicity, bias",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "81F3860C-C691-4594-9C1F-2155C3E7397C",
+    "title": "RETRIEVAL-AUGMENTED GENERATION (RAG)",
+    "checklists": [
+      {
+        "id": "1431EAD0-ED75-433A-87F5-B089884DCCE5",
+        "title": "Vector database implementation",
+        "isComplete": false
+      },
+      {
+        "id": "9882901E-B966-4EB1-A175-4A348CBDB51F",
+        "title": "Document chunking strategies",
+        "isComplete": false
+      },
+      {
+        "id": "11DE72FE-527C-41B7-88E6-441A430CC356",
+        "title": "Embedding techniques",
+        "isComplete": false
+      },
+      {
+        "id": "D3B6727E-8D27-4C18-B3B9-CFFF36191724",
+        "title": "Term-based vs embedding-based retrieval",
+        "isComplete": false
+      },
+      {
+        "id": "556BDE9D-6538-458C-9E47-980EB50DCB72",
+        "title": "Retrieval optimization techniques",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "C9629C01-E71E-408B-95C3-EB287A5B63AD",
+    "title": "FINETUNING",
+    "checklists": [
+      {
+        "id": "80382B07-5310-4BAE-8CD6-593A21913D22",
+        "title": "Parameter-efficient fine-tuning (PEFT)",
+        "isComplete": false
+      },
+      {
+        "id": "2F02FAD5-4400-4DEB-9D98-01DFFE54E8BA",
+        "title": "LoRA and similar approaches",
+        "isComplete": false
+      },
+      {
+        "id": "6EDB719A-00CE-41C7-B452-32EBD19195F3",
+        "title": "Model distillation",
+        "isComplete": false
+      },
+      {
+        "id": "2811D38D-AC2F-4703-9670-3FD5C142F12A",
+        "title": "Model merging",
+        "isComplete": false
+      },
+      {
+        "id": "3703DE93-B7A5-4D42-ACF6-16B06FFAA747",
+        "title": "Multi-task fine-tuning",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "8BA49636-33CB-4042-AAD8-21969AC1D5DA",
+    "title": "PROMPT ENGINEERING",
+    "checklists": [
+      {
+        "id": "F698670F-6BF5-4560-962A-034AB664E613",
+        "title": "Structuring effective prompts",
+        "isComplete": false
+      },
+      {
+        "id": "75809854-2C3E-44B8-A041-2CAAB78FD3C1",
+        "title": "In-context learning techniques",
+        "isComplete": false
+      },
+      {
+        "id": "6B4276DC-8AFF-4D63-BDEA-3F178B54EEDA",
+        "title": "Defensive prompt engineering against attacks",
+        "isComplete": false
+      },
+      {
+        "id": "BDB7C960-2B82-49D2-9F2D-721D956E0531",
+        "title": "Prompt experimentation and tracking",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "1894D59A-74DB-4E58-B4E6-656D22A6C5D9",
+    "title": "AGENT SYSTEMS",
+    "checklists": [
+      {
+        "id": "545D6191-4B24-4FA7-ABA6-B34826B5DC2A",
+        "title": "Tool integration",
+        "isComplete": false
+      },
+      {
+        "id": "A7A64D85-FDBC-4366-BE15-E54937717739",
+        "title": "Planning and reflection techniques",
+        "isComplete": false
+      },
+      {
+        "id": "47D49426-F873-418C-99C0-E6A3F6BDD31F",
+        "title": "Memory systems implementation",
+        "isComplete": false
+      },
+      {
+        "id": "5735A420-F4C2-49DE-8F48-A7284369A70A",
+        "title": "Agent security and safety guardrails",
+        "isComplete": false
+      },
+      {
+        "id": "FA6D3298-521F-43FA-9633-3379FBD84C3A",
+        "title": "Agent evaluation methodologies",
+        "isComplete": false
+      },
+      {
+        "id": "AECB3E93-FF26-43E6-853D-E10DFC54F37F",
+        "title": "Multi-agent system design",
+        "isComplete": false
+      },
+      {
+        "id": "F7A69A96-E7D3-40D9-95EE-4CB0D12F5344",
+        "title": "- [ ]",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "078DB3A0-4E5F-4F50-9410-6318F327E14F",
+    "title": "DATASET ENGINEERING",
+    "checklists": [
+      {
+        "id": "B108D5E0-0283-4E9B-9D95-7027B905B302",
+        "title": "Data acquisition strategies",
+        "isComplete": false
+      },
+      {
+        "id": "3881380C-58DC-414B-B88E-2CBC9BD625FF",
+        "title": "Data quality assessment",
+        "isComplete": false
+      },
+      {
+        "id": "CF9F261A-3FE1-44AD-A828-5A668B4140F2",
+        "title": "Data processing",
+        "isComplete": false
+      },
+      {
+        "id": "EBA00A43-39A1-49B5-BE20-1A143641BC3C",
+        "title": "Annotation guidelines creation",
+        "isComplete": false
+      },
+      {
+        "id": "7EB50383-19E3-4DAE-A866-09C3841A3D9E",
+        "title": "Data augmentation and synthesis",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "26394578-FAF9-4125-9E27-9515036A195D",
+    "title": "INFERENCE OPTIMIZATION",
+    "checklists": [
+      {
+        "id": "A65413AF-5FF0-42B6-B1E3-9E8E3258C2AA",
+        "title": "Understanding compute vs memory-bound inference",
+        "isComplete": false
+      },
+      {
+        "id": "AC6FF296-24A2-439A-A6E1-F60490768930",
+        "title": "Latency metrics - TTFT, TPOT",
+        "isComplete": false
+      },
+      {
+        "id": "BB5E32DB-8C14-409C-BA43-864C09CCEF0F",
+        "title": "Model compression - quantization, pruning, distillation",
+        "isComplete": false
+      },
+      {
+        "id": "A6FC8365-BD47-4C08-972F-90E4A8FEB865",
+        "title": "Batch vs. online inference strategies",
+        "isComplete": false
+      },
+      {
+        "id": "24DA3CF9-C119-45BF-A90C-F5D1E4958A5B",
+        "title": "Hardware (GPU, TPU, memory specs)",
+        "isComplete": false
+      },
+      {
+        "id": "FCDE06F4-991A-4442-95AD-FF17B0227531",
+        "title": "Batching techniques",
+        "isComplete": false
+      },
+      {
+        "id": "20DFC181-6444-49C8-9065-F57016D851C1",
+        "title": "Parallel inference strategies",
+        "isComplete": false
+      },
+      {
+        "id": "A9D53853-E454-4E4E-B6FD-EC1EDBCDD6AF",
+        "title": "Caching implementations",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "20F68340-BB69-4662-948C-448A6DEA7645",
+    "title": "USER FEEDBACK INTEGRATION",
+    "checklists": [
+      {
+        "id": "EA468525-2C85-4C43-8E64-91A0CA127571",
+        "title": "Feedback system design",
+        "isComplete": false
+      },
+      {
+        "id": "19F93C10-F6B8-4FD2-8DD4-687EF07F3521",
+        "title": "Explicit vs implicit feedback collection",
+        "isComplete": false
+      },
+      {
+        "id": "D0C21FF9-39C5-466A-81AB-1D5892D17581",
+        "title": "Data flywheels",
+        "isComplete": false
+      },
+      {
+        "id": "6C3F2174-2AD5-443C-BBA3-7AFA15F10E90",
+        "title": "Human-in-the-loop approaches",
+        "isComplete": false
+      },
+      {
+        "id": "40D62618-CBAE-4505-8D50-C674E04BD45A",
+        "title": "Continuous improvement cycles",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "2524511D-5DEB-44F8-8671-1804F81EE5EF",
+    "title": "APPLICATION ARCHITECTURE",
+    "checklists": [
+      {
+        "id": "35A85738-235F-4B5D-BDFE-6C92E448F9C8",
+        "title": "Context construction patterns",
+        "isComplete": false
+      },
+      {
+        "id": "6D1CC606-ABD9-4AAD-A920-B2232CBF9593",
+        "title": "Input-output guardrails",
+        "isComplete": false
+      },
+      {
+        "id": "AC78DCA6-42AB-4080-8A89-E00593B1B693",
+        "title": "Model routing and gateways",
+        "isComplete": false
+      },
+      {
+        "id": "CA411D0A-25B3-4587-9551-6DB6FA4FA6CF",
+        "title": "Caching architectures",
+        "isComplete": false
+      },
+      {
+        "id": "F5830633-5997-49D5-84F1-B88272918031",
+        "title": "Orchestration patterns",
+        "isComplete": false
+      }
+    ]
+  },
+  {
+    "id": "5760123A-2E4F-4D34-9902-0366679AED50",
+    "title": "SECURITY, PRIVACY, ETHICS",
+    "checklists": [
+      {
+        "id": "F1A15AB6-2897-47E7-B20C-C6B82E6F583B",
+        "title": "Prompt injection detection-mitigation",
+        "isComplete": false
+      },
+      {
+        "id": "FA32E393-D512-40F7-9A16-097D982E335E",
+        "title": "Adversarial input handling",
+        "isComplete": false
+      },
+      {
+        "id": "A95E86ED-3489-46E8-AEF2-C3606BC28D26",
+        "title": "PII detection and redaction",
+        "isComplete": false
+      },
+      {
+        "id": "A1D591D3-533D-4C56-B709-2B7F9FA6E723",
+        "title": "Secure sandboxing (for agents-code execution)",
+        "isComplete": false
+      },
+      {
+        "id": "B698A83A-6512-4372-A9C5-C8155F81F50E",
+        "title": "Model privacy risks (e.g. memorization attacks, data leakage)",
+        "isComplete": false
+      },
+      {
+        "id": "2A6FC162-812B-4175-B102-D7B36F99A98D",
+        "title": "Legal compliance (GDPR, copyright implications)",
+        "isComplete": false
+      },
+      {
+        "id": "D89BCCD4-253F-4967-ACF2-3823C98AAB78",
+        "title": "AI Ethics considerations",
+        "isComplete": false
+      }
+    ]
+  }
+]

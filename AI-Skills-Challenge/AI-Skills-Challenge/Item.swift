@@ -2,7 +2,7 @@
 //  Item.swift
 //  AI-Skills-Challenge
 //
-//  Created by Jenny Wilder on 4/15/26.
+//  Created by Roger Pingleton on 4/15/26.
 //
 
 import Foundation
