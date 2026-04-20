@@ -35,8 +35,11 @@ public enum VectorStoreLoader {
     /// Loads from an arbitrary URL (useful for tests and previews).
     public static func load(from url: URL) throws -> VectorStore {
         var db: OpaquePointer?
-        let flags = SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX
-        let rc = sqlite3_open_v2(url.path, &db, flags, nil)
+        let flags = SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_URI
+        // Use file: URI with immutable=1 so SQLite skips WAL/SHM files
+        // (required for read-only bundle resources).
+        let uri = "file:\(url.path)?immutable=1"
+        let rc = sqlite3_open_v2(uri, &db, flags, nil)
         guard rc == SQLITE_OK, let db else {
             let msg = db.map { String(cString: sqlite3_errmsg($0)) } ?? "unknown"
             if let db { sqlite3_close(db) }

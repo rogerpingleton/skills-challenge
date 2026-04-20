@@ -25,6 +25,7 @@ public final class RAGSystem {
         self.retriever = BruteForceRetriever(store)
     }
 
+
     public struct RetrievedChunk {
         public let chunk: Chunk
         public let score: Float
@@ -43,7 +44,7 @@ public final class RAGSystem {
 
     public func answer(query: String, maxContextTokens: Int = 2400) async throws -> Answer {
         let retrieved = retrieve(query: query, k: 8)
-        let packed = try await packContext(retrieved, budget: maxContextTokens)
+        let packed = packContext(retrieved, budget: maxContextTokens)
 
         let instructions = """
         You answer questions using ONLY the provided passages. \
@@ -68,12 +69,13 @@ public final class RAGSystem {
 
     /// Greedily include retrieved chunks in descending-score order while
     /// respecting the token budget reserved for context.
-    private func packContext(_ retrieved: [RetrievedChunk], budget: Int) async throws -> Packed {
-        let model = SystemLanguageModel.default
+    private func packContext(_ retrieved: [RetrievedChunk], budget: Int) -> Packed {
+        let tokenizer = NLTokenizer(unit: .word)
         var total = 0
         var kept: [RetrievedChunk] = []
         for rc in retrieved {
-            let tc = try await model.tokenUsage(for: Prompt(rc.chunk.text)).tokenCount
+            tokenizer.string = rc.chunk.text
+            let tc = tokenizer.tokens(for: rc.chunk.text.startIndex..<rc.chunk.text.endIndex).count
             if total + tc > budget { continue }
             kept.append(rc); total += tc
         }

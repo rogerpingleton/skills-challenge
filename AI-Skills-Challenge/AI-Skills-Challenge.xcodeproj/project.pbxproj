@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0B82A5DD2F969E1C00DC4390 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0B82A5122F95CEF400DC4390 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -18,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		0B82A50E2F95CEF400DC4390 /* AI-Skills-ChallengeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AI-Skills-ChallengeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		0BCAF6742F8FE57800F1B73A /* AI-Skills-Challenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AI-Skills-Challenge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -46,17 +51,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B82A5DD2F969E1C00DC4390 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B82A5DB2F969E1C00DC4390 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0BCAF66B2F8FE57800F1B73A = {
 			isa = PBXGroup;
 			children = (
 				0BCAF6762F8FE57800F1B73A /* AI-Skills-Challenge */,
 				0B82A50F2F95CEF400DC4390 /* AI-Skills-ChallengeTests */,
+				0B82A5DB2F969E1C00DC4390 /* Frameworks */,
 				0BCAF6752F8FE57800F1B73A /* Products */,
 			);
 			sourceTree = "<group>";
