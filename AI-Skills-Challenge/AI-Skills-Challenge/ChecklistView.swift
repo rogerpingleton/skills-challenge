@@ -38,7 +38,7 @@ struct ChecklistView: View {
             } header: {
                 Text(section.title)
                     .font(.largeTitle.bold())
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color("AccentColor"))
                     .textCase(nil)
             }
         }

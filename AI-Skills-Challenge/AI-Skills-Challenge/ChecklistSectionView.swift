@@ -31,7 +31,7 @@ struct ChecklistSectionView: View {
                 } header: {
                     Text("AI Skills Checklist")
                         .font(.largeTitle.bold())
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color("AccentColor"))
                         .textCase(nil)
                 }
             }
