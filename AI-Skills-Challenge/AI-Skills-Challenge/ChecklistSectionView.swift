@@ -14,12 +14,30 @@ struct ChecklistSectionView: View {
 
     var body: some View {
         NavigationStack {
-            List(sections) { section in
-                NavigationLink(destination: ChecklistView(section: section)) {
-                    Text(section.title)
+            List {
+                Image("Main1")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+
+                Section {
+                    ForEach(sections) { section in
+                        NavigationLink(destination: ChecklistView(section: section)) {
+                            Text(section.title)
+                        }
+                    }
+                } header: {
+                    Text("AI Skills Checklist")
+                        .font(.largeTitle.bold())
+                        .foregroundStyle(.primary)
+                        .textCase(nil)
                 }
             }
-            .navigationTitle("AI Skills Challenge")
+            .listStyle(.plain)
+            .ignoresSafeArea(edges: .top)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 }

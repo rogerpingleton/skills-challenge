@@ -25,7 +25,8 @@ struct AI_Skills_ChallengeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            //ContentView()
+            ChecklistSectionView()
         }
         .modelContainer(sharedModelContainer)
     }
