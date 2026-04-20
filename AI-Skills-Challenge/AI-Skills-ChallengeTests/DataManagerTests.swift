@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 import Testing
 @testable import AI_Skills_Challenge
 
@@ -148,6 +149,19 @@ struct DataManagerTests {
         let data = Data(json.utf8)
         #expect(throws: DecodingError.self) {
             try JSONDecoder().decode(Checklist.self, from: data)
+        }
+    }
+
+    // MARK: - Asset Integrity
+
+    @Test("Every section title has a corresponding image in Assets")
+    func allSectionTitlesHaveImages() {
+        let sections = DataManager.loadChecklistSections()
+        for section in sections {
+            #expect(
+                UIImage(named: section.title) != nil,
+                "Missing image asset for section '\(section.title)'"
+            )
         }
     }
 }
