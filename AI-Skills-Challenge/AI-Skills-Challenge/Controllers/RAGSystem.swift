@@ -46,15 +46,29 @@ public final class RAGSystem {
         let retrieved = retrieve(query: query, k: 8)
         let packed = packContext(retrieved, budget: maxContextTokens)
 
+//        let instructions = """
+//        You answer questions using ONLY the provided passages. \
+//        If the passages don't contain the answer, say so.
+//        """
+        
         let instructions = """
         You answer questions using ONLY the provided passages. \
-        If the passages don't contain the answer, say so.
+        If the passages don't contain the answer, say so, \
+        and suggest that perhaps the user's question may be too narrow.
         """
+        
+        
+//        let instructions = """
+//        You answer questions to the best of your ability using the provided passages. \
+//        Speculate if no passages are provided.
+//        """
 
         let contextBlock = packed.chunks.enumerated().map { idx, rc in
             "[\(idx + 1)] \(rc.chunk.text)"
         }.joined(separator: "\n\n")
-
+        
+        //print("RAG Context Debug: \(contextBlock)\n")
+        
         let prompt = Prompt("""
         Passages:
         \(contextBlock)
