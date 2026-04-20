@@ -13,7 +13,7 @@ struct InfoView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("AI Skills Challenge")
                             .font(.headline)
-                        Text("A learning companion to help you develop and track your AI skills. Work through checklists covering key AI topics, and chat with an on-device AI assistant to deepen your understanding.")
+                        Text("A learning companion to help you develop and track your AI skills. Work through checklists covering key AI topics, and chat with an on-device AI assistant to deepen your understanding. Based off the AI Engineering Skills Checklist by Marina Wyss, part of the [AI/ML Career Launchpad](https://aiml-career-launchpad.circle.so/) and used with permission.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
