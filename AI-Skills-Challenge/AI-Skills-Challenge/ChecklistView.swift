@@ -27,10 +27,12 @@ struct ChecklistView: View {
                             toggleCompletion(for: item)
                         } label: {
                             Image(systemName: isComplete(item) ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(isComplete(item) ? .green : .secondary)
+                                .foregroundStyle(isComplete(item) ? Color("AccentColor"): .secondary)
                         }
                         .buttonStyle(.plain)
-                        Text(item.title)
+                        NavigationLink(destination: StudySkillsView(itemTitle: item.title, sectionTitle: section.title)) {
+                            Text(item.title)
+                        }
                     }
                 }
             } header: {

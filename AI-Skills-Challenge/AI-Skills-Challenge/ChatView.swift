@@ -127,7 +127,7 @@ struct MessageBubble: View {
 
             Text(message.text)
                 .padding(12)
-                .background(message.role == .user ? Color.blue : Color(.systemGray5))
+                .background(message.role == .user ? Color("AccentColor") : Color(.systemGray5))
                 .foregroundStyle(message.role == .user ? .white : .primary)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 

@@ -164,4 +164,18 @@ struct DataManagerTests {
             )
         }
     }
+
+    // MARK: - Study Markdown Integrity
+
+    @Test("Every checklist item title has a corresponding markdown file")
+    func allChecklistItemsHaveMarkdownFiles() {
+        let sections = DataManager.loadChecklistSections()
+        let allItems = sections.flatMap(\.checklists)
+        for item in allItems {
+            #expect(
+                Bundle.main.url(forResource: item.title, withExtension: "md") != nil,
+                "Missing markdown file for '\(item.title).md'"
+            )
+        }
+    }
 }
