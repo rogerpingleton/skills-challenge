@@ -11,10 +11,10 @@ import SwiftUI
 struct ChecklistSection: Codable, Identifiable {
     let id: String
     let title: String
-    let checklist: [ChecklistSectionItem]
+    let checklists: [Checklist]
 }
 
-struct ChecklistSectionItem: Codable, Identifiable {
+struct Checklist: Codable, Identifiable {
     let id: String
     let title: String
     let isComplete: Bool
