@@ -75,9 +75,14 @@ public final class RAGSystem {
 
         Question: \(query)
         """)
+        
+        let options = GenerationOptions(
+            sampling: .greedy,
+            temperature: 0.0
+        )
 
         let session = LanguageModelSession { instructions }
-        let response = try await session.respond(to: prompt)
+        let response = try await session.respond(to: prompt, options: options)
         return Answer(text: response.content, citations: packed.chunks)
     }
 

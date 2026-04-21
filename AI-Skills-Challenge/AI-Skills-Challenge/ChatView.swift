@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import NaturalLanguage
 import FoundationModels
 
 struct ChatMessage: Identifiable {
@@ -21,10 +22,12 @@ struct ChatView: View {
     @State private var messages: [ChatMessage] = []
     @State private var inputText = ""
     @State private var isGenerating = false
-    @State private var session = LanguageModelSession(
-        instructions: "You are a helpful AI assistant for the AI Skills Challenge app. Help users learn about AI concepts and skills. Keep responses concise and informative."
-    )
-    private var model = SystemLanguageModel.default
+    @State private var ragSystem: RAGSystem?
+    @State private var initError: String?
+    @State private var tokenCount = 0
+
+    private let model = SystemLanguageModel.default
+    private let tokenLimit = 100
 
     var body: some View {
         NavigationStack {
@@ -32,6 +35,13 @@ struct ChatView: View {
             case .available:
                 chatContent
                     .navigationTitle("Chat")
+                    .task {
+                        do {
+                            ragSystem = try RAGSystem()
+                        } catch {
+                            initError = error.localizedDescription
+                        }
+                    }
             case .unavailable(.deviceNotEligible):
                 unavailableView(message: "This device does not support Apple Intelligence.")
             case .unavailable(.appleIntelligenceNotEnabled):
@@ -46,33 +56,76 @@ struct ChatView: View {
 
     private var chatContent: some View {
         VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 12) {
-                        ForEach(messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
-                        }
-                    }
-                    .padding()
+            if let error = initError {
+                ContentUnavailableView {
+                    Label("RAG System Error", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error)
                 }
-                .onChange(of: messages.count) {
-                    if let lastMessage = messages.last {
-                        withAnimation {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                        }
-                    }
-                }
+            } else {
+                messageList
+                Divider()
+                inputArea
             }
+        }
+    }
 
-            Divider()
+    private var messageList: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 12) {
+                    ForEach(messages) { message in
+                        MessageBubble(message: message)
+                            .id(message.id)
+                    }
+                    if isGenerating {
+                        HStack {
+                            ProgressView()
+                                .padding(12)
+                                .background(Color(.systemGray5))
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                            Spacer()
+                        }
+                        .id("loading")
+                    }
+                }
+                .padding()
+            }
+            .onChange(of: messages.count) {
+                scrollToBottom(proxy: proxy)
+            }
+            .onChange(of: isGenerating) {
+                scrollToBottom(proxy: proxy)
+            }
+        }
+    }
 
+    private func scrollToBottom(proxy: ScrollViewProxy) {
+        withAnimation {
+            if isGenerating {
+                proxy.scrollTo("loading", anchor: .bottom)
+            } else if let lastMessage = messages.last {
+                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+            }
+        }
+    }
+
+    private var inputArea: some View {
+        VStack(spacing: 4) {
             HStack {
                 TextField("Ask a question...", text: $inputText)
                     .textFieldStyle(.roundedBorder)
                     .disabled(isGenerating)
                     .onSubmit {
                         sendMessage()
+                    }
+                    .onChange(of: inputText) { oldValue, newValue in
+                        let count = countTokens(in: newValue)
+                        if count >= tokenLimit && newValue.count > oldValue.count {
+                            inputText = oldValue
+                        } else {
+                            tokenCount = count
+                        }
                     }
 
                 Button {
@@ -83,8 +136,17 @@ struct ChatView: View {
                 }
                 .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty || isGenerating)
             }
-            .padding()
+
+            if !inputText.isEmpty {
+                HStack {
+                    Text("\(tokenCount) / \(tokenLimit) tokens")
+                        .font(.caption)
+                        .foregroundStyle(tokenCount >= tokenLimit ? .red : .secondary)
+                    Spacer()
+                }
+            }
         }
+        .padding()
     }
 
     private func unavailableView(message: String) -> some View {
@@ -95,23 +157,28 @@ struct ChatView: View {
         }
     }
 
+    private func countTokens(in text: String) -> Int {
+        guard !text.isEmpty else { return 0 }
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = text
+        return tokenizer.tokens(for: text.startIndex..<text.endIndex).count
+    }
+
     private func sendMessage() {
         let userText = inputText.trimmingCharacters(in: .whitespaces)
-        guard !userText.isEmpty else { return }
+        guard !userText.isEmpty, let rag = ragSystem else { return }
         inputText = ""
+        tokenCount = 0
 
         messages.append(ChatMessage(role: .user, text: userText))
-        messages.append(ChatMessage(role: .assistant, text: ""))
         isGenerating = true
 
         Task {
             do {
-                let stream = session.streamResponse(to: userText)
-                for try await snapshot in stream {
-                    messages[messages.count - 1].text = snapshot.content
-                }
+                let answer = try await rag.answer(query: userText)
+                messages.append(ChatMessage(role: .assistant, text: answer.text))
             } catch {
-                messages[messages.count - 1].text = "Sorry, an error occurred: \(error.localizedDescription)"
+                messages.append(ChatMessage(role: .assistant, text: "Sorry, an error occurred: \(error.localizedDescription)"))
             }
             isGenerating = false
         }
