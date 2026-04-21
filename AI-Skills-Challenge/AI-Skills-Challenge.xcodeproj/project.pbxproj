@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B82A5DD2F969E1C00DC4390 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */; };
+		0BC34A2B2F978FBD00D1D49C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BC34A2A2F978FBD00D1D49C /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,11 +21,50 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0BC34A1C2F978CC600D1D49C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = usr/share/man/man1;
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0B82A50E2F95CEF400DC4390 /* AI-Skills-ChallengeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AI-Skills-ChallengeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		0BC34A1E2F978CC600D1D49C /* rag​-eval */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "rag​-eval"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0BC34A2A2F978FBD00D1D49C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		0BCAF6742F8FE57800F1B73A /* AI-Skills-Challenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AI-Skills-Challenge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0BC34A262F978F6F00D1D49C /* Exceptions for "AI-Skills-Challenge" folder in "rag​-eval" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Controllers/BruteForceRetriever.swift,
+				Controllers/RAGSystem.swift,
+				Controllers/VectorStoreLoader.swift,
+				Models/VectorStore.swift,
+			);
+			target = 0BC34A1D2F978CC600D1D49C /* rag​-eval */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		0BC34A2F2F978FEC00D1D49C /* Exceptions for "AI-Skills-Challenge" folder in "Copy Files" phase from "rag​-eval" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0BC34A1C2F978CC600D1D49C /* CopyFiles */;
+			membershipExceptions = (
+				Resources/rag.sqlite,
+				"Resources/rag.sqlite-shm",
+				"Resources/rag.sqlite-wal",
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0B82A50F2F95CEF400DC4390 /* AI-Skills-ChallengeTests */ = {
@@ -32,8 +72,17 @@
 			path = "AI-Skills-ChallengeTests";
 			sourceTree = "<group>";
 		};
+		0BC34A1F2F978CC600D1D49C /* rag​-eval */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "rag​-eval";
+			sourceTree = "<group>";
+		};
 		0BCAF6762F8FE57800F1B73A /* AI-Skills-Challenge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0BC34A262F978F6F00D1D49C /* Exceptions for "AI-Skills-Challenge" folder in "rag​-eval" target */,
+				0BC34A2F2F978FEC00D1D49C /* Exceptions for "AI-Skills-Challenge" folder in "Copy Files" phase from "rag​-eval" target */,
+			);
 			path = "AI-Skills-Challenge";
 			sourceTree = "<group>";
 		};
@@ -44,6 +93,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0BC34A1B2F978CC600D1D49C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0BC34A2B2F978FBD00D1D49C /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +118,7 @@
 		0B82A5DB2F969E1C00DC4390 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0BC34A2A2F978FBD00D1D49C /* libsqlite3.tbd */,
 				0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
@@ -71,6 +129,7 @@
 			children = (
 				0BCAF6762F8FE57800F1B73A /* AI-Skills-Challenge */,
 				0B82A50F2F95CEF400DC4390 /* AI-Skills-ChallengeTests */,
+				0BC34A1F2F978CC600D1D49C /* rag​-eval */,
 				0B82A5DB2F969E1C00DC4390 /* Frameworks */,
 				0BCAF6752F8FE57800F1B73A /* Products */,
 			);
@@ -81,6 +140,7 @@
 			children = (
 				0BCAF6742F8FE57800F1B73A /* AI-Skills-Challenge.app */,
 				0B82A50E2F95CEF400DC4390 /* AI-Skills-ChallengeTests.xctest */,
+				0BC34A1E2F978CC600D1D49C /* rag​-eval */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -110,6 +170,28 @@
 			productName = "AI-Skills-ChallengeTests";
 			productReference = 0B82A50E2F95CEF400DC4390 /* AI-Skills-ChallengeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0BC34A1D2F978CC600D1D49C /* rag​-eval */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BC34A242F978CC600D1D49C /* Build configuration list for PBXNativeTarget "rag​-eval" */;
+			buildPhases = (
+				0BC34A1A2F978CC600D1D49C /* Sources */,
+				0BC34A1B2F978CC600D1D49C /* Frameworks */,
+				0BC34A1C2F978CC600D1D49C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0BC34A1F2F978CC600D1D49C /* rag​-eval */,
+			);
+			name = "rag​-eval";
+			packageProductDependencies = (
+			);
+			productName = "rag​-eval";
+			productReference = 0BC34A1E2F978CC600D1D49C /* rag​-eval */;
+			productType = "com.apple.product-type.tool";
 		};
 		0BCAF6732F8FE57800F1B73A /* AI-Skills-Challenge */ = {
 			isa = PBXNativeTarget;
@@ -148,6 +230,9 @@
 						CreatedOnToolsVersion = 26.4.1;
 						TestTargetID = 0BCAF6732F8FE57800F1B73A;
 					};
+					0BC34A1D2F978CC600D1D49C = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
 					0BCAF6732F8FE57800F1B73A = {
 						CreatedOnToolsVersion = 26.4;
 					};
@@ -169,6 +254,7 @@
 			targets = (
 				0BCAF6732F8FE57800F1B73A /* AI-Skills-Challenge */,
 				0B82A50D2F95CEF400DC4390 /* AI-Skills-ChallengeTests */,
+				0BC34A1D2F978CC600D1D49C /* rag​-eval */,
 			);
 		};
 /* End PBXProject section */
@@ -192,6 +278,13 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		0B82A50A2F95CEF400DC4390 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0BC34A1A2F978CC600D1D49C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -255,6 +348,38 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AI-Skills-Challenge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AI-Skills-Challenge";
+			};
+			name = Release;
+		};
+		0BC34A222F978CC600D1D49C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DJ6RTH942F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		0BC34A232F978CC600D1D49C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DJ6RTH942F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -455,6 +580,15 @@
 			buildConfigurations = (
 				0B82A5152F95CEF400DC4390 /* Debug */,
 				0B82A5162F95CEF400DC4390 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0BC34A242F978CC600D1D49C /* Build configuration list for PBXNativeTarget "rag​-eval" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BC34A222F978CC600D1D49C /* Debug */,
+				0BC34A232F978CC600D1D49C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

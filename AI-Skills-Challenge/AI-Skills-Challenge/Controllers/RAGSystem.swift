@@ -25,6 +25,17 @@ public final class RAGSystem {
         self.retriever = BruteForceRetriever(store)
     }
 
+    /// Initializes the RAG system from a specific database file URL.
+    /// Use this for command-line tools where Bundle.main is unavailable.
+    public init(databaseURL: URL) throws {
+        guard let e = NLEmbedding.sentenceEmbedding(for: .english) else {
+            throw RAGError.embeddingUnavailable
+        }
+        self.embedder = e
+        self.store = try VectorStoreLoader.load(from: databaseURL)
+        self.retriever = BruteForceRetriever(store)
+    }
+
 
     public struct RetrievedChunk {
         public let chunk: Chunk
