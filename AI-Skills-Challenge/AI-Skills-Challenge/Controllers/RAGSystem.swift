@@ -63,7 +63,13 @@ public final class RAGSystem {
         Question: \(query)
         """)
         
-        let session = LanguageModelSession { instructions }
+//        let session = LanguageModelSession { instructions }
+        let session = LanguageModelSession(
+            
+            model: .default,
+            tools: [], // Tools defined here
+            instructions: instructions
+        )
         let response = try await session.respond(to: prompt)
         return String("\(response.content)")
     }
@@ -78,10 +84,20 @@ public final class RAGSystem {
 //        """
         
         let instructions = """
-        You answer questions using ONLY the provided source material. \
+        Answer all questions in the context of AI Engineering. \
+        Do not attempt to make tool calls. \
+        You answer questions using the provided source material. \
         If the source material doesn't contain the answer, say so, \
         but do not mention examples from the source material in your response.
         """
+        
+//        let instructions = """
+//        You are an assistant with expertise in AI Engineering. \
+//        Do not attempt to make tool calls. \
+//        You answer questions using the provided source material. \
+//        If the source material doesn't contain the answer, say so, \
+//        but do not mention examples from the source material in your response.
+//        """
         
         
 //        let instructions = """
@@ -106,10 +122,15 @@ public final class RAGSystem {
         
 //        let options = GenerationOptions(
 //            sampling: .greedy,
-//            temperature: 0.0
+//            temperature: 0.0,
 //        )
 
-        let session = LanguageModelSession { instructions }
+        //let session = LanguageModelSession { instructions }
+        let session = LanguageModelSession(
+            model: .default,
+            tools: [], // Tools defined here
+            instructions: instructions
+        )
         let response = try await session.respond(to: prompt)
         // let response = try await session.respond(to: prompt, options: options)
         return Answer(text: response.content, citations: packed.chunks)
