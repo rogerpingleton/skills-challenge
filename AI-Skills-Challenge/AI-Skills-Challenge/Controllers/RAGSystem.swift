@@ -52,6 +52,21 @@ public final class RAGSystem {
             byId[hit.chunkId].map { RetrievedChunk(chunk: $0, score: hit.score) }
         }
     }
+    
+    public func answerRAW (query: String) async throws -> String {
+        let instructions = """
+        You are an assistant with expertise in AI Engineering \
+        Answer all questions in the context of your expertise.
+        """
+        
+        let prompt = Prompt("""
+        Question: \(query)
+        """)
+        
+        let session = LanguageModelSession { instructions }
+        let response = try await session.respond(to: prompt)
+        return String("\(response.content)")
+    }
 
     public func answer(query: String, maxContextTokens: Int = 2400) async throws -> Answer {
         let retrieved = retrieve(query: query, k: 8)
@@ -63,9 +78,9 @@ public final class RAGSystem {
 //        """
         
         let instructions = """
-        You answer questions using ONLY the provided passages. \
-        If the passages don't contain the answer, say so, \
-        and suggest that perhaps the user's question may be too narrow.
+        You answer questions using ONLY the provided source material. \
+        If the source material doesn't contain the answer, say so, \
+        but do not mention examples from the source material in your response.
         """
         
         
@@ -86,14 +101,17 @@ public final class RAGSystem {
 
         Question: \(query)
         """)
+        //Question: \(query) If the source material does not inlude this, answer in the context of AI Engineering.
+        //        Question: \(query) If the source material does not inlude this, speculate, but tell me this is your best guess.
         
-        let options = GenerationOptions(
-            sampling: .greedy,
-            temperature: 0.0
-        )
+//        let options = GenerationOptions(
+//            sampling: .greedy,
+//            temperature: 0.0
+//        )
 
         let session = LanguageModelSession { instructions }
-        let response = try await session.respond(to: prompt, options: options)
+        let response = try await session.respond(to: prompt)
+        // let response = try await session.respond(to: prompt, options: options)
         return Answer(text: response.content, citations: packed.chunks)
     }
 
