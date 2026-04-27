@@ -1,0 +1,802 @@
+[
+  {
+    "prompt": "what is the difference between a population and a sample in statistics?",
+    "answer": "A population is the entire set of items of interest, while a sample is a subset of the population used to make inferences. Sampling is used because it is usually infeasible to measure every member of the population."
+  },
+  {
+    "prompt": "what is Bayes' theorem?",
+    "answer": "Bayes' theorem is P(A|B) = P(B|A) * P(A) / P(B). It describes how to update the probability of a hypothesis A given new evidence B, and is foundational for many ML methods including Naive Bayes classifiers and Bayesian inference."
+  },
+  {
+    "prompt": "what is the difference between variance and standard deviation?",
+    "answer": "Variance is the average of the squared deviations from the mean. Standard deviation is the square root of the variance, which returns the measure to the same units as the original data, making it more interpretable."
+  },
+  {
+    "prompt": "what is a dot product?",
+    "answer": "The dot product is the sum of the element-wise products of two vectors of equal length, producing a scalar. It is used in ML for measuring similarity, projecting vectors, and as a core operation in neural network layers."
+  },
+  {
+    "prompt": "why is matrix multiplication important in machine learning?",
+    "answer": "Matrix multiplication is the core operation in neural networks, used to apply linear transformations to input data at each layer. GPUs and TPUs are optimized for massively parallel matrix multiplication, which is why they dominate ML workloads."
+  },
+  {
+    "prompt": "what is an eigenvector?",
+    "answer": "An eigenvector of a matrix is a non-zero vector whose direction is unchanged when the matrix is applied to it; it is only scaled by a factor called the eigenvalue. Eigenvectors are used in PCA, spectral clustering, and other dimensionality reduction techniques."
+  },
+  {
+    "prompt": "what is the difference between a scalar, vector, matrix, and tensor?",
+    "answer": "A scalar is a single number (0D), a vector is a 1D array of numbers, a matrix is a 2D array, and a tensor is a generalization to any number of dimensions (N-D). In deep learning, activations and weights are typically represented as tensors."
+  },
+  {
+    "prompt": "what is a derivative in Calculus and why is it used in machine learning?",
+    "answer": "A derivative measures the rate at which a function's output changes with respect to a change in its input. In ML, derivatives (gradients) are used to determine how to adjust model parameters to minimize the loss function during training."
+  },
+  {
+    "prompt": "what is the chain rule in calculus?",
+    "answer": "The chain rule states that the derivative of a composite function f(g(x)) is f'(g(x)) * g'(x). It is the mathematical basis of backpropagation, allowing gradients to flow through multiple layers of a neural network."
+  },
+  {
+    "prompt": "what is the difference between FP32 and FP16?",
+    "answer": "FP32 is 32-bit floating point with 1 sign bit, 8 exponent bits, and 23 mantissa bits. FP16 is 16-bit with 1 sign, 5 exponent, and 10 mantissa bits. FP16 halves memory and speeds up computation but has a smaller range and less precision."
+  },
+  {
+    "prompt": "what is bfloat16 and why is it popular in deep learning?",
+    "answer": "bfloat16 is a 16-bit format with 8 exponent bits (like FP32) and 7 mantissa bits. It keeps FP32's dynamic range, which makes training more stable than FP16, while still halving memory usage. It is widely used on TPUs and modern GPUs."
+  },
+  {
+    "prompt": "what is INT8 quantization?",
+    "answer": "INT8 quantization converts model weights and/or activations from floating-point to 8-bit integers. This reduces model size by ~4x versus FP32 and accelerates inference on integer-optimized hardware, at the cost of some accuracy."
+  },
+  {
+    "prompt": "explain the concept of Big O notation?",
+    "answer": "Big O notation describes the asymptotic upper bound on the runtime or memory of an algorithm as input size grows. For example, O(n) means linear scaling, O(log n) logarithmic, and O(n^2) quadratic."
+  },
+  {
+    "prompt": "what is the difference between an array and a linked list?",
+    "answer": "An array stores elements contiguously in memory with O(1) indexed access but O(n) insertions in the middle. A linked list stores elements in nodes with pointers, offering O(1) insertion given a node but O(n) access by index."
+  },
+  {
+    "prompt": "what is a hash map and its typical time complexity?",
+    "answer": "A hash map is a data structure that maps keys to values using a hash function to index into an array of buckets. It offers average O(1) insertion, deletion, and lookup, though worst case can be O(n) with many collisions."
+  },
+  {
+    "prompt": "what is supervised learning?",
+    "answer": "Supervised learning trains models on labeled data, where each input has a known target output. The model learns to map inputs to outputs, as in classification or regression tasks."
+  },
+  {
+    "prompt": "what is unsupervised learning?",
+    "answer": "Unsupervised learning finds patterns in unlabeled data without explicit target outputs. Common tasks include clustering, dimensionality reduction, and density estimation."
+  },
+  {
+    "prompt": "what is self-supervised learning?",
+    "answer": "Self-supervised learning generates its own labels from the structure of the data, such as predicting the next token in a sentence or a masked patch of an image. It enables training on massive unlabeled corpora and underlies most modern LLM pretraining."
+  },
+  {
+    "prompt": "what is linear regression?",
+    "answer": "Linear regression models the relationship between one or more input features and a continuous output as a linear combination of the features plus a bias. It is trained by minimizing the mean squared error between predictions and targets."
+  },
+  {
+    "prompt": "what is k-means clustering?",
+    "answer": "K-means is an unsupervised algorithm that partitions data into k clusters by iteratively assigning points to the nearest cluster center and updating centers to the mean of assigned points. It requires choosing k in advance and is sensitive to initialization."
+  },
+  {
+    "prompt": "what is a decision tree?",
+    "answer": "A decision tree is a model that makes predictions by recursively splitting the feature space based on simple rules learned from the data. They are interpretable but can overfit, which is often mitigated with ensembles like random forests or gradient boosting."
+  },
+  {
+    "prompt": "what is accuracy as a classification metric?",
+    "answer": "Accuracy is the fraction of predictions that are correct out of all predictions. It can be misleading on imbalanced datasets, where a trivial classifier can score high by always predicting the majority class."
+  },
+  {
+    "prompt": "what is the difference between precision and recall?",
+    "answer": "Precision is the fraction of positive predictions that are actually positive (TP / (TP + FP)). Recall is the fraction of actual positives that were correctly identified (TP / (TP + FN))."
+  },
+  {
+    "prompt": "what is the F1 score?",
+    "answer": "The F1 score is the harmonic mean of precision and recall: 2 * (precision * recall) / (precision + recall). It balances the two metrics and is useful on imbalanced classification tasks."
+  },
+  {
+    "prompt": "what is a confusion matrix?",
+    "answer": "A confusion matrix is a table that shows the counts of true positives, false positives, true negatives, and false negatives from a classifier's predictions. It is the basis for computing accuracy, precision, recall, and other metrics."
+  },
+  {
+    "prompt": "why do we split data into training, validation, and test sets?",
+    "answer": "The training set fits the model, the validation set tunes hyperparameters and selects models without biasing the final evaluation, and the test set provides an unbiased estimate of performance on unseen data. Mixing these roles leads to over-optimistic results."
+  },
+  {
+    "prompt": "what is cross-validation?",
+    "answer": "Cross-validation splits the training data into k folds, training on k-1 and validating on the remaining fold, then averaging results. It gives a more reliable estimate of generalization than a single train/validation split, especially on small datasets."
+  },
+  {
+    "prompt": "what is overfitting?",
+    "answer": "Overfitting happens when a model learns the training data too closely, including its noise, and fails to generalize to new data. It is often indicated by a large gap between low training error and high validation error."
+  },
+  {
+    "prompt": "what is underfitting?",
+    "answer": "Underfitting occurs when a model is too simple to capture the underlying patterns in the data, resulting in high error on both training and validation sets. It is typically solved by using a more expressive model or better features."
+  },
+  {
+    "prompt": "name three common techniques to prevent overfitting.",
+    "answer": "Common techniques include regularization (L1, L2, dropout), gathering more training data, and early stopping based on validation loss. Data augmentation and simpler model architectures also help."
+  },
+  {
+    "prompt": "what is a neural network?",
+    "answer": "A neural network is a function composed of layers of interconnected units (neurons), each applying a linear transformation followed by a non-linear activation. Parameters are learned via gradient-based optimization to minimize a loss."
+  },
+  {
+    "prompt": "what is backpropagation?",
+    "answer": "Backpropagation is the algorithm that computes gradients of a loss function with respect to every weight in a neural network by applying the chain rule from the output layer backward. These gradients are then used by an optimizer to update weights."
+  },
+  {
+    "prompt": "what is gradient descent?",
+    "answer": "Gradient descent is an optimization algorithm that iteratively updates parameters in the opposite direction of the loss gradient, scaled by a learning rate. Variants include stochastic gradient descent (SGD) and mini-batch gradient descent."
+  },
+  {
+    "prompt": "what is the difference between a CNN and an RNN?",
+    "answer": "Convolutional Neural Networks (CNNs) use shared convolutional filters to detect local spatial patterns, typically in images. Recurrent Neural Networks (RNNs) process sequential data by maintaining a hidden state that is updated at each step."
+  },
+  {
+    "prompt": "what is dropout?",
+    "answer": "Dropout is a regularization technique where, during training, each neuron's output is zeroed with some probability p. This prevents co-adaptation of neurons and reduces overfitting."
+  },
+  {
+    "prompt": "what is batch normalization?",
+    "answer": "Batch normalization normalizes the activations of a layer across a mini-batch to have zero mean and unit variance, then applies learned scale and shift parameters. It stabilizes and accelerates training."
+  },
+  {
+    "prompt": "what is a learning rate?",
+    "answer": "The learning rate is the step size used by an optimizer when updating model parameters in the direction of the negative gradient. Too high causes divergence; too low causes slow or stuck training."
+  },
+  {
+    "prompt": "what is the Adam optimizer?",
+    "answer": "Adam (Adaptive Moment Estimation) is an optimizer that maintains per-parameter exponentially decaying averages of past gradients (first moment) and squared gradients (second moment) to adaptively scale updates. It is widely used as a robust default."
+  },
+  {
+    "prompt": "what is a loss function?",
+    "answer": "A loss function quantifies how far a model's predictions are from the ground truth, producing a scalar that the optimizer tries to minimize. Common examples are cross-entropy for classification and mean squared error for regression."
+  },
+  {
+    "prompt": "what is regularization in machine learning?",
+    "answer": "Regularization adds constraints or penalties to the loss function to discourage overly complex models and reduce overfitting. Common forms include L1 (lasso), L2 (ridge/weight decay), and dropout."
+  },
+  {
+    "prompt": "what is the difference between a list and a tuple in Python?",
+    "answer": "Lists are mutable (elements can be changed, added, removed), while tuples are immutable once created. Tuples are slightly faster and can be used as dictionary keys; lists cannot."
+  },
+  {
+    "prompt": "what is a Python generator?",
+    "answer": "A generator is a function that produces a sequence of values lazily using the yield keyword, rather than returning them all at once. Generators are memory-efficient for large or infinite sequences."
+  },
+  {
+    "prompt": "what is the Global Interpreter Lock (GIL) in CPython?",
+    "answer": "The GIL is a mutex in CPython that allows only one thread to execute Python bytecode at a time. It simplifies memory management but limits CPU-bound multi-threading, making multiprocessing or async I/O preferable for parallelism."
+  },
+  {
+    "prompt": "what does the grep command do?",
+    "answer": "grep searches input for lines matching a given regular expression pattern and prints them. It is commonly used to filter logs, find code patterns, or locate text in files."
+  },
+  {
+    "prompt": "what is the difference between | and > in the Unix shell?",
+    "answer": "The pipe (|) sends the standard output of one command as input to another command. The redirect (>) writes standard output to a file, overwriting it (>> appends instead)."
+  },
+  {
+    "prompt": "what is the difference between git merge and git rebase?",
+    "answer": "git merge integrates changes by creating a merge commit that preserves both branches' histories. git rebase replays commits from one branch onto another, producing a linear history but rewriting commits."
+  },
+  {
+    "prompt": "what is a pull request?",
+    "answer": "A pull request is a mechanism (on platforms like GitHub/GitLab) to propose merging changes from one branch into another. It enables code review, discussion, and CI checks before changes are integrated."
+  },
+  {
+    "prompt": "what is a REST API?",
+    "answer": "REST (Representational State Transfer) is an architectural style for web APIs that uses standard HTTP methods (GET, POST, PUT, DELETE) to operate on resources identified by URLs. Responses are typically JSON and interactions are stateless."
+  },
+  {
+    "prompt": "what is the difference between PUT and POST in HTTP?",
+    "answer": "POST is used to create a new resource, typically at a collection endpoint; repeated POSTs may create multiple resources. PUT is used to create or replace a resource at a specific URL and is idempotent."
+  },
+  {
+    "prompt": "what is a container?",
+    "answer": "A container is a lightweight, portable unit that packages an application with its dependencies and runs in an isolated user space on a shared OS kernel. Containers start faster and use fewer resources than full virtual machines."
+  },
+  {
+    "prompt": "what is Docker?",
+    "answer": "Docker is a platform for building, shipping, and running containerized applications. It provides a standard image format, a runtime, and tooling like Dockerfiles to define how images are built."
+  },
+  {
+    "prompt": "which are the three largest public cloud providers?",
+    "answer": "Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP). Each offers compute, storage, networking, and managed ML/AI services at global scale."
+  },
+  {
+    "prompt": "what is the difference between IaaS, PaaS, and SaaS?",
+    "answer": "IaaS provides raw infrastructure like VMs and storage (e.g., EC2). PaaS provides a managed runtime or platform (e.g., App Engine). SaaS provides fully managed applications (e.g., Gmail)."
+  },
+  {
+    "prompt": "what are the three pillars of observability?",
+    "answer": "Metrics (numerical measurements over time), logs (discrete timestamped events), and traces (causally linked spans across services). Together they help understand and debug distributed systems."
+  },
+  {
+    "prompt": "what is the difference between metrics and logs?",
+    "answer": "Metrics are numerical time series suitable for aggregation and alerting (e.g., request count, latency). Logs are timestamped textual records of discrete events with richer context but higher storage and query cost."
+  },
+  {
+    "prompt": "what is the difference between unit testing and integration testing?",
+    "answer": "Unit tests verify a single function or class in isolation, often with mocked dependencies. Integration tests verify that multiple components work together correctly, including external services like databases."
+  },
+  {
+    "prompt": "how do you test non-deterministic LLM outputs?",
+    "answer": "Use approaches like assertions on structural constraints (JSON schema, required fields), semantic similarity thresholds, LLM-as-judge evaluations, and fixing seeds/temperature. Golden datasets with human-verified outputs complement these."
+  },
+  {
+    "prompt": "what is the transformer architecture?",
+    "answer": "The transformer is a neural network architecture introduced in the 2017 paper 'Attention Is All You Need' that relies entirely on attention mechanisms rather than recurrence or convolution. It is the foundation of modern LLMs like GPT and Claude."
+  },
+  {
+    "prompt": "what are the main components of a transformer block?",
+    "answer": "A transformer block typically contains multi-head self-attention, a feed-forward network (MLP), layer normalization, and residual connections around each sub-layer. Decoder blocks add masked self-attention and cross-attention."
+  },
+  {
+    "prompt": "what is positional encoding in transformers?",
+    "answer": "Positional encoding injects information about the position of each token into its embedding, since pure attention is order-agnostic. Original transformers used sinusoidal encodings; modern LLMs often use learned or relative schemes like RoPE or ALiBi."
+  },
+  {
+    "prompt": "what is a residual (skip) connection?",
+    "answer": "A residual connection adds a layer's input to its output (y = x + F(x)), enabling gradients to flow directly backward. This allows training of very deep networks, including transformers."
+  },
+  {
+    "prompt": "what is layer normalization?",
+    "answer": "Layer normalization normalizes a layer's activations across the feature dimension for each example, rather than across a batch as in batch norm. It is preferred in transformers because it works well with variable-length sequences and small batches."
+  },
+  {
+    "prompt": "what is self-attention?",
+    "answer": "Self-attention computes a weighted sum of all token representations in a sequence for each position, with weights determined by the similarity between a query and all keys. This lets each token directly attend to any other token in the sequence."
+  },
+  {
+    "prompt": "what is multi-head attention?",
+    "answer": "Multi-head attention runs several attention operations in parallel with different learned projections, then concatenates the results. Each head can learn to focus on different types of relationships between tokens."
+  },
+  {
+    "prompt": "what are Q, K, and V in attention?",
+    "answer": "Q (query), K (key), and V (value) are linear projections of the input. Attention weights are computed from the scaled dot product of Q and K, then applied to V to produce the output. Intuitively: queries ask, keys advertise, values carry content."
+  },
+  {
+    "prompt": "what is tokenization in NLP?",
+    "answer": "Tokenization is the process of splitting text into discrete units (tokens) that a model can process as integer IDs. Tokens may be words, subwords, or bytes depending on the tokenizer."
+  },
+  {
+    "prompt": "what is Byte-Pair Encoding (BPE)?",
+    "answer": "BPE is a subword tokenization algorithm that starts with individual characters and iteratively merges the most frequent adjacent pairs to build a fixed-size vocabulary. It balances vocabulary size against token sequence length."
+  },
+  {
+    "prompt": "why is subword tokenization preferred over word-level tokenization?",
+    "answer": "Subword tokenization handles rare and out-of-vocabulary words by splitting them into known pieces, bounds vocabulary size, and better handles morphologically rich languages. Word-level tokenization suffers from huge vocabularies and many OOV tokens."
+  },
+  {
+    "prompt": "what is Supervised Fine-Tuning (SFT)?",
+    "answer": "SFT continues training a pretrained model on labeled example pairs (e.g., prompt -> desired response) using standard supervised learning. It teaches the model task formats and desired behaviors."
+  },
+  {
+    "prompt": "what is RLHF?",
+    "answer": "Reinforcement Learning from Human Feedback trains a model to produce outputs preferred by humans by first training a reward model on human preference comparisons, then fine-tuning the LLM to maximize that reward, typically with PPO."
+  },
+  {
+    "prompt": "what is Direct Preference Optimization (DPO)?",
+    "answer": "DPO optimizes a language model directly on preference data without training a separate reward model or using RL. It reframes the RLHF objective as a simple classification-like loss, making training simpler and more stable."
+  },
+  {
+    "prompt": "what is the typical order of post-training stages for an LLM assistant?",
+    "answer": "A common sequence is: pretraining on a large corpus, supervised fine-tuning on instruction/response pairs, then preference optimization (RLHF or DPO) to align with human preferences. Safety-specific training and red-teaming are also typically included."
+  },
+  {
+    "prompt": "what factors should you consider when selecting an LLM for production?",
+    "answer": "Key factors are task quality, latency, throughput, cost per token, context window size, licensing/terms of use, safety characteristics, regional data handling, fine-tuning options, and vendor reliability."
+  },
+  {
+    "prompt": "what is the tradeoff between model size and inference cost?",
+    "answer": "Larger models generally have higher quality but cost more per token, use more memory, and have higher latency. Smaller or distilled models can serve routine tasks more cheaply while larger models handle harder ones via routing."
+  },
+  {
+    "prompt": "what is the difference between an open-weight model and a fully open-source model?",
+    "answer": "An open-weight model releases the trained parameters but not necessarily training data, code, or recipes. A fully open-source model releases weights plus training code, data, and documentation sufficient to reproduce the model."
+  },
+  {
+    "prompt": "what are advantages of API-hosted models over self-hosted ones?",
+    "answer": "API models require no infrastructure, scale automatically, are kept up to date, offer strong baseline quality, and typically have enterprise safety and compliance features. Tradeoffs include recurring cost, data egress, and vendor lock-in."
+  },
+  {
+    "prompt": "what are advantages of self-hosting an open-weight model?",
+    "answer": "Advantages include full control over data and privacy, predictable cost at scale, the ability to fine-tune and customize, offline or air-gapped deployment, and avoiding dependency on a third-party provider."
+  },
+  {
+    "prompt": "what is MMLU?",
+    "answer": "MMLU (Massive Multitask Language Understanding) is a benchmark of multiple-choice questions across 57 subjects, including STEM, humanities, and law. It is widely used to compare LLMs' general knowledge and reasoning."
+  },
+  {
+    "prompt": "name several popular LLM benchmarks and what they measure.",
+    "answer": "MMLU (general knowledge), HumanEval and MBPP (code generation), GSM8K and MATH (math reasoning), HellaSwag and ARC (commonsense reasoning), TruthfulQA (truthfulness), and SWE-bench (software engineering tasks)."
+  },
+  {
+    "prompt": "what are the typical stages of an LLM evaluation pipeline?",
+    "answer": "Define objectives and metrics, curate a representative eval dataset, generate model outputs, score them (automatic, LLM judge, or human), aggregate and compare against baselines, and iterate. Results feed back into prompt or model improvements."
+  },
+  {
+    "prompt": "why is it important to have a held-out eval set?",
+    "answer": "A held-out eval set provides an unbiased estimate of performance and prevents overfitting to examples seen during development. Without it, iterative changes can silently tune to the dev set and mislead decision-making."
+  },
+  {
+    "prompt": "what is perplexity?",
+    "answer": "Perplexity is the exponentiated average negative log-likelihood a language model assigns to a dataset. Lower perplexity means the model predicts the data better, but it does not always correlate with user-facing quality."
+  },
+  {
+    "prompt": "what is BLEU score?",
+    "answer": "BLEU measures n-gram overlap between a machine-generated text and one or more reference texts, with a brevity penalty. It was designed for machine translation and has known weaknesses on open-ended generation."
+  },
+  {
+    "prompt": "what is ROUGE score?",
+    "answer": "ROUGE is a family of recall-oriented n-gram overlap metrics primarily used for summarization. ROUGE-N measures n-gram recall and ROUGE-L uses longest common subsequence."
+  },
+  {
+    "prompt": "what is semantic similarity in evaluation?",
+    "answer": "Semantic similarity compares the meaning of two texts using embedding-based distance (e.g., cosine similarity of sentence embeddings), rather than lexical overlap. It captures paraphrase quality that BLEU and ROUGE miss."
+  },
+  {
+    "prompt": "what is functional correctness in evaluating code generation?",
+    "answer": "Functional correctness checks whether generated code passes a set of unit tests, regardless of textual similarity to a reference solution. The pass@k metric from HumanEval is a common formalization."
+  },
+  {
+    "prompt": "what is cosine similarity?",
+    "answer": "Cosine similarity measures the cosine of the angle between two vectors, computed as their dot product divided by the product of their norms. It ranges from -1 to 1 and is widely used to compare embeddings."
+  },
+  {
+    "prompt": "what is an LLM-as-a-judge?",
+    "answer": "LLM-as-a-judge uses a strong language model to score or compare other models' outputs against criteria or a reference. It is faster and cheaper than human evaluation but can be biased (e.g., toward verbosity or its own style)."
+  },
+  {
+    "prompt": "when should you use human evaluation instead of automated metrics?",
+    "answer": "Human evaluation is valuable for subjective qualities (helpfulness, tone, safety), high-stakes decisions, calibrating automated judges, and open-ended tasks where reference-based metrics are weak. It is slow and expensive, so it is often reserved for key milestones."
+  },
+  {
+    "prompt": "what are common biases of LLM judges?",
+    "answer": "Position bias (preferring the first or last answer), verbosity bias (preferring longer answers), self-preference bias (favoring its own style), and difficulty calibrating across tasks. Mitigations include position randomization, rubrics, and pairwise comparisons."
+  },
+  {
+    "prompt": "what is hallucination in LLMs?",
+    "answer": "A hallucination is a model output that is fluent but factually incorrect, unsupported, or fabricated. Hallucinations are a primary failure mode of LLMs, especially in open-ended generation and retrieval-grounded answering."
+  },
+  {
+    "prompt": "how can hallucinations be measured?",
+    "answer": "Methods include faithfulness scoring against source documents (for RAG), fact-checking against knowledge bases, natural language inference between output and references, and LLM-judge scoring with citations. Human review remains the gold standard."
+  },
+  {
+    "prompt": "how do you measure toxicity in LLM outputs?",
+    "answer": "Use classifiers trained on labeled toxicity data (e.g., Perspective API, Detoxify, or fine-tuned classifiers), red-teaming with adversarial prompts, and benchmarks like RealToxicityPrompts. Results should be stratified by demographic subgroups."
+  },
+  {
+    "prompt": "how do you measure bias in language models?",
+    "answer": "Use benchmarks like BBQ, StereoSet, or CrowS-Pairs that probe stereotypical associations, measure performance disparities across demographic groups, and run counterfactual prompts with swapped identity terms. No single metric captures all bias."
+  },
+  {
+    "prompt": "what is a vector database?",
+    "answer": "A vector database stores high-dimensional embeddings and supports fast similarity search, typically via approximate nearest neighbor (ANN) indexes. It is a core component of retrieval-augmented generation systems."
+  },
+  {
+    "prompt": "name several popular vector databases or libraries.",
+    "answer": "Examples include Pinecone, Weaviate, Milvus, Qdrant, Chroma, pgvector (Postgres extension), Elasticsearch/OpenSearch with k-NN, and FAISS (a library, not a managed DB)."
+  },
+  {
+    "prompt": "what is approximate nearest neighbor (ANN) search?",
+    "answer": "ANN algorithms return likely-nearest vectors much faster than exact search by trading a small amount of recall for speed. They are essential for searching millions or billions of embeddings in real time."
+  },
+  {
+    "prompt": "what is HNSW?",
+    "answer": "Hierarchical Navigable Small World (HNSW) is a graph-based ANN algorithm that builds a multi-layer proximity graph and performs greedy search from coarse to fine layers. It offers high recall at low latency and is a popular default in vector DBs."
+  },
+  {
+    "prompt": "what is chunking in RAG?",
+    "answer": "Chunking splits source documents into smaller passages that can be embedded and retrieved individually. Good chunking balances context completeness against retrieval precision and embedding context-window limits."
+  },
+  {
+    "prompt": "what are common document chunking strategies?",
+    "answer": "Fixed-size chunks by tokens/characters with overlap, recursive splitting by structural boundaries (paragraphs, sections, sentences), semantic chunking based on topic shifts, and document-structure-aware chunking (e.g., Markdown headings, code units)."
+  },
+  {
+    "prompt": "what is an embedding?",
+    "answer": "An embedding is a dense vector representation of an item (word, sentence, document, image) where semantic similarity corresponds to geometric proximity. Embeddings enable similarity search, clustering, and downstream classification."
+  },
+  {
+    "prompt": "name a few popular text embedding models.",
+    "answer": "OpenAI text-embedding-3-small/large, Cohere Embed, Voyage AI embeddings, Google Gemini embeddings, and open models like BGE, E5, GTE, and sentence-transformers variants."
+  },
+  {
+    "prompt": "what is BM25?",
+    "answer": "BM25 is a term-based (lexical) retrieval ranking function that scores documents by term frequency, inverse document frequency, and length normalization. It is a strong, non-neural baseline that remains competitive, especially for keyword-heavy queries."
+  },
+  {
+    "prompt": "what is hybrid search?",
+    "answer": "Hybrid search combines lexical retrieval (e.g., BM25) with dense embedding retrieval and fuses the results (often via reciprocal rank fusion). It captures both exact-term matches and semantic similarity."
+  },
+  {
+    "prompt": "what is reranking in retrieval pipelines?",
+    "answer": "Reranking applies a more powerful but slower model (often a cross-encoder) to re-score a small set of candidates returned by a fast first-stage retriever. This improves top-k quality without the cost of running the reranker on the full corpus."
+  },
+  {
+    "prompt": "what is HyDE (Hypothetical Document Embeddings)?",
+    "answer": "HyDE asks an LLM to generate a hypothetical answer to the user's query, embeds that answer, and uses it as the query vector for retrieval. It can improve recall when queries are short or underspecified."
+  },
+  {
+    "prompt": "what is Parameter-Efficient Fine-Tuning (PEFT)?",
+    "answer": "PEFT is a family of techniques that adapt pretrained models by training only a small subset of parameters or small added modules, keeping the bulk of the base model frozen. This dramatically reduces compute, memory, and storage for fine-tuning."
+  },
+  {
+    "prompt": "why is PEFT useful compared to full fine-tuning?",
+    "answer": "PEFT requires far less GPU memory and compute, produces small adapter files that are cheap to store and swap, and reduces the risk of catastrophic forgetting. It makes fine-tuning large models feasible on modest hardware."
+  },
+  {
+    "prompt": "what is LoRA?",
+    "answer": "Low-Rank Adaptation (LoRA) freezes a pretrained model's weights and injects small trainable low-rank matrices (A and B) into selected layers, typically attention projections. Only these matrices are trained, yielding large parameter savings."
+  },
+  {
+    "prompt": "what does the rank (r) in LoRA control?",
+    "answer": "The rank r controls the dimensionality of the low-rank update A*B and thus the adapter's capacity. Higher r increases expressivity but uses more parameters and memory; common values are 4-64 depending on the task."
+  },
+  {
+    "prompt": "what is QLoRA?",
+    "answer": "QLoRA fine-tunes with LoRA on top of a base model quantized to 4-bit (NF4) precision. It allows fine-tuning very large models on a single consumer GPU with minimal quality loss."
+  },
+  {
+    "prompt": "what is knowledge distillation?",
+    "answer": "Knowledge distillation trains a smaller 'student' model to reproduce the outputs (typically probability distributions) of a larger 'teacher' model. The goal is to compress the teacher's capabilities into a cheaper, faster model."
+  },
+  {
+    "prompt": "what is model merging?",
+    "answer": "Model merging combines two or more fine-tuned models' weights (often sharing the same base) into a single model without additional training. Techniques include linear averaging, SLERP, TIES-merging, and DARE."
+  },
+  {
+    "prompt": "what is multi-task fine-tuning?",
+    "answer": "Multi-task fine-tuning trains a single model on data from several tasks simultaneously, using task-identifying prompts or heads. It can improve generalization and produces one model that handles many tasks, at the cost of potential negative transfer."
+  },
+  {
+    "prompt": "what are common components of an effective prompt?",
+    "answer": "Clear instructions, relevant context, examples (few-shot), desired output format (often with a schema), explicit constraints, and sometimes a role or system prompt. Well-structured prompts reduce ambiguity and improve reliability."
+  },
+  {
+    "prompt": "what is few-shot prompting?",
+    "answer": "Few-shot prompting provides several input-output examples in the prompt so the model can infer the desired pattern before solving the real query. It often improves quality on tasks where zero-shot is insufficient."
+  },
+  {
+    "prompt": "what is chain-of-thought prompting?",
+    "answer": "Chain-of-thought (CoT) prompting asks the model to produce intermediate reasoning steps before the final answer. It improves performance on multi-step tasks like math, logic, and planning, especially for larger models."
+  },
+  {
+    "prompt": "what is in-context learning?",
+    "answer": "In-context learning is the ability of a pretrained LLM to learn a task from examples provided in the prompt, without updating any weights. It enables adaptation to new tasks purely at inference time."
+  },
+  {
+    "prompt": "what is a system prompt?",
+    "answer": "A system prompt is a high-priority instruction prepended to a conversation that defines the model's role, constraints, tone, and behavior. It is typically treated as more authoritative than user messages."
+  },
+  {
+    "prompt": "what is prompt injection?",
+    "answer": "Prompt injection is an attack where adversarial instructions, placed in user input or retrieved content, cause the LLM to ignore developer instructions or produce unintended behavior. It is the LLM analog of classic injection attacks."
+  },
+  {
+    "prompt": "what is indirect prompt injection?",
+    "answer": "Indirect prompt injection delivers malicious instructions via third-party content the LLM ingests (web pages, emails, documents), rather than via direct user input. It is particularly dangerous for agents that browse or retrieve."
+  },
+  {
+    "prompt": "how can system prompts be made more resistant to injection?",
+    "answer": "Use strong delimiters around user content, repeat key instructions, explicitly tell the model to ignore instructions in untrusted inputs, enforce output schemas, validate tool inputs, and apply separate input/output guardrails. No prompt alone is fully secure."
+  },
+  {
+    "prompt": "what is a prompt registry?",
+    "answer": "A prompt registry is a versioned store of prompt templates with metadata (models, params, evaluation results). It enables auditing, rollback, A/B testing, and reproducibility across environments."
+  },
+  {
+    "prompt": "why should teams version and track prompts in production?",
+    "answer": "Prompts are code: small changes can meaningfully affect quality, cost, and safety. Versioning enables reliable rollbacks, regression testing, A/B comparisons, and tying observed behavior to specific prompt versions."
+  },
+  {
+    "prompt": "what is tool use (function calling) in LLMs?",
+    "answer": "Tool use allows an LLM to invoke external functions or APIs by emitting structured calls (name + arguments) that the host application executes. Results are returned to the model, enabling up-to-date data, actions, and precise computation."
+  },
+  {
+    "prompt": "how does function calling typically work in an LLM API?",
+    "answer": "The developer provides tool schemas (name, description, JSON-schema args). The model decides when to call a tool, emits arguments in a structured format, the application runs the tool, and the result is fed back for the model's next turn."
+  },
+  {
+    "prompt": "what is the ReAct pattern?",
+    "answer": "ReAct (Reasoning + Acting) interleaves the model's reasoning (Thought) with tool calls (Action) and observations in a loop. It improves the reliability of agents on multi-step tasks by making the decision process explicit."
+  },
+  {
+    "prompt": "what is self-reflection in agents?",
+    "answer": "Self-reflection is when an agent critiques its own previous output or plan and revises it before finalizing. Patterns like Reflexion use reflection traces stored in memory to improve over trials."
+  },
+  {
+    "prompt": "what is memory in an AI agent?",
+    "answer": "Memory is the mechanism by which an agent retains information across turns or sessions. It may be short-term (within the current context window) or long-term (external storage such as a vector DB or database)."
+  },
+  {
+    "prompt": "what is the difference between short-term and long-term memory in agents?",
+    "answer": "Short-term memory holds the current conversation and scratchpad in the model's context window. Long-term memory persists across sessions in external stores (vector DBs, key-value stores), and relevant entries are retrieved into context as needed."
+  },
+  {
+    "prompt": "what are guardrails in an AI system?",
+    "answer": "Guardrails are policies and checks that constrain model inputs, outputs, and actions to prevent unsafe or off-policy behavior. They may include classifiers, regex filters, schema validators, and allow/deny lists."
+  },
+  {
+    "prompt": "how does the principle of least privilege apply to agents?",
+    "answer": "Give agents only the minimum tools, permissions, data access, and blast radius needed for their task. This limits damage from bugs, prompt injection, or misuse, and is especially important for agents that can execute code or take actions."
+  },
+  {
+    "prompt": "how do you evaluate an AI agent?",
+    "answer": "Use a mix of end-to-end task success rate on curated scenarios, step-level (trajectory) evaluation of tool calls and intermediate reasoning, cost and latency metrics, and safety/robustness tests. LLM-judge and human reviews complement automatic scoring."
+  },
+  {
+    "prompt": "what is trajectory evaluation for agents?",
+    "answer": "Trajectory evaluation scores not just the final answer but the sequence of actions, tool calls, and reasoning steps an agent took. It helps diagnose failures like wrong tool choice, bad arguments, or unnecessary steps."
+  },
+  {
+    "prompt": "what is a multi-agent system?",
+    "answer": "A multi-agent system uses several specialized agents that collaborate, often through a shared protocol or an orchestrator. Specialization can improve quality on complex tasks but adds coordination, cost, and debugging complexity."
+  },
+  {
+    "prompt": "what is the orchestrator-worker pattern?",
+    "answer": "An orchestrator agent decomposes a task and delegates subtasks to worker agents, then synthesizes their results. It centralizes control and enables specialization, but the orchestrator becomes a bottleneck and single point of failure."
+  },
+  {
+    "prompt": "what is MCP (Model Context Protocol)?",
+    "answer": "MCP is an open protocol, introduced by Anthropic, that standardizes how applications expose tools, resources, and prompts to LLMs. It lets any MCP-compatible client connect to any MCP server without custom integration code."
+  },
+  {
+    "prompt": "what are common data acquisition strategies for training ML models?",
+    "answer": "Scraping public web data, licensing commercial datasets, using open datasets, collecting in-product logs with consent, crowdsourced annotation, synthetic data generation, and partnerships for proprietary data."
+  },
+  {
+    "prompt": "what is synthetic data in ML?",
+    "answer": "Synthetic data is artificially generated data (by simulation, rules, or other models like LLMs) used to train or evaluate models. It is useful when real data is scarce, expensive, sensitive, or biased, but can introduce its own artifacts."
+  },
+  {
+    "prompt": "what are important dimensions of data quality?",
+    "answer": "Common dimensions include accuracy, completeness, consistency, timeliness, uniqueness (no duplicates), validity (matches schema/constraints), and representativeness. Labels additionally need clarity and inter-annotator agreement."
+  },
+  {
+    "prompt": "why is data deduplication important for LLM training data?",
+    "answer": "Duplicates waste compute, amplify memorization, skew evaluation if they leak across train/test, and can overfit to specific sources. Fuzzy deduplication (e.g., MinHash) is commonly used at scale."
+  },
+  {
+    "prompt": "what is ETL?",
+    "answer": "ETL stands for Extract, Transform, Load: extract data from sources, transform it (clean, normalize, enrich), and load it into a target system like a data warehouse. ELT reverses the last two steps, loading raw data then transforming in place."
+  },
+  {
+    "prompt": "what is data normalization?",
+    "answer": "In ML preprocessing, normalization scales features to a common range or distribution (e.g., min-max or z-score) so they contribute comparably and training is more stable. In databases, normalization means structuring tables to reduce redundancy."
+  },
+  {
+    "prompt": "why are clear annotation guidelines important?",
+    "answer": "They reduce label noise and inter-annotator disagreement, improve downstream model quality, and make the labeling process auditable and reproducible. Good guidelines include definitions, decision rules, worked examples, and edge cases."
+  },
+  {
+    "prompt": "what is inter-annotator agreement and how is it measured?",
+    "answer": "Inter-annotator agreement measures consistency between annotators on the same items. Common metrics are Cohen's kappa (two annotators), Fleiss' kappa (multiple), and Krippendorff's alpha. Low agreement signals ambiguous guidelines or an ill-defined task."
+  },
+  {
+    "prompt": "what is data augmentation?",
+    "answer": "Data augmentation creates new training examples by applying label-preserving transformations to existing data, such as cropping or flipping images or paraphrasing text. It improves generalization and is especially valuable with small datasets."
+  },
+  {
+    "prompt": "how is synthetic data used in LLM post-training?",
+    "answer": "Strong models are used to generate instruction/response pairs, preference comparisons, reasoning traces, or task-specific dialogues that train smaller or more specialized models. Techniques like self-instruct and distillation from a teacher LLM are common."
+  },
+  {
+    "prompt": "what is the difference between compute-bound and memory-bound workloads?",
+    "answer": "A compute-bound workload is limited by the processor's arithmetic throughput (FLOPs). A memory-bound workload is limited by memory bandwidth and data movement, not by math. The roofline model formalizes this tradeoff."
+  },
+  {
+    "prompt": "why is LLM inference often memory-bound?",
+    "answer": "During autoregressive decoding with small batches, each token requires reading the full model weights (and growing KV cache) from GPU memory to do relatively little compute per byte. This makes memory bandwidth, not FLOPs, the bottleneck."
+  },
+  {
+    "prompt": "what is Time To First Token (TTFT)?",
+    "answer": "TTFT is the latency from sending a request to receiving the first generated token. It is dominated by the prefill stage (processing the input prompt) and is critical for user-perceived responsiveness in streaming interfaces."
+  },
+  {
+    "prompt": "what is Time Per Output Token (TPOT)?",
+    "answer": "TPOT (also called inter-token latency) is the average time between successive generated tokens during decoding. It determines the tokens-per-second throughput a user sees after the first token."
+  },
+  {
+    "prompt": "how do TTFT and TPOT differ in what they measure?",
+    "answer": "TTFT captures prompt-processing (prefill) latency, which scales with input length. TPOT captures decoding latency per token, which scales with model size, KV-cache size, and batch conditions. Both matter for end-to-end latency."
+  },
+  {
+    "prompt": "what is quantization?",
+    "answer": "Quantization reduces the numerical precision of model weights and/or activations (e.g., from FP16 to INT8 or INT4). It shrinks memory and often speeds up inference on supported hardware, at some accuracy cost."
+  },
+  {
+    "prompt": "what is the difference between post-training quantization and quantization-aware training?",
+    "answer": "Post-training quantization converts a trained model to lower precision without retraining, using calibration data. Quantization-aware training simulates quantization during training so the model learns to tolerate it, usually yielding better accuracy at low bit-widths."
+  },
+  {
+    "prompt": "what is model pruning?",
+    "answer": "Pruning removes redundant or low-importance weights (unstructured) or whole neurons/heads/layers (structured) from a model to reduce its size and compute. Structured pruning is more hardware-friendly; unstructured pruning needs sparse-aware kernels to speed up inference."
+  },
+  {
+    "prompt": "what is batch inference?",
+    "answer": "Batch inference processes many inputs together in a single run, maximizing throughput and GPU utilization. It is used for offline jobs where latency is not critical, such as scoring datasets or generating embeddings."
+  },
+  {
+    "prompt": "what is online (real-time) inference?",
+    "answer": "Online inference serves individual or small-batch requests with low latency, typically behind an API. It trades some throughput efficiency for responsiveness to interactive users."
+  },
+  {
+    "prompt": "what is VRAM?",
+    "answer": "VRAM is the dedicated memory on a GPU, used to hold model weights, activations, KV cache, and intermediate tensors during inference or training. Its size is often the binding constraint for running large models."
+  },
+  {
+    "prompt": "what is a TPU?",
+    "answer": "A TPU (Tensor Processing Unit) is Google's custom ASIC designed for large matrix multiplications and ML workloads. TPUs are optimized for training and serving large neural networks, especially with bfloat16."
+  },
+  {
+    "prompt": "what is HBM?",
+    "answer": "High Bandwidth Memory (HBM) is a stacked DRAM technology used on modern data-center GPUs and accelerators, offering much higher bandwidth than traditional GDDR memory. HBM bandwidth is critical for memory-bound LLM inference."
+  },
+  {
+    "prompt": "what is dynamic batching in LLM serving?",
+    "answer": "Dynamic batching groups concurrent requests together at the server into a single forward pass, improving GPU utilization without users having to batch themselves. It introduces a small queuing delay in exchange for much higher throughput."
+  },
+  {
+    "prompt": "what is continuous (in-flight) batching?",
+    "answer": "Continuous batching allows new requests to join and completed requests to leave a batch at each decoding step, rather than waiting for the whole batch to finish. It substantially increases GPU utilization in LLM inference engines like vLLM and TGI."
+  },
+  {
+    "prompt": "what is data parallelism?",
+    "answer": "Data parallelism replicates the full model across devices and splits the batch across them. Each device computes gradients on its shard, and gradients are synchronized. It is the simplest form of parallelism and scales throughput."
+  },
+  {
+    "prompt": "what is tensor parallelism?",
+    "answer": "Tensor parallelism splits individual weight matrices across devices so each device holds and computes a shard of each layer. It is used when a model does not fit in one device's memory, at the cost of extra communication per layer."
+  },
+  {
+    "prompt": "what is pipeline parallelism?",
+    "answer": "Pipeline parallelism places different layers of a model on different devices, passing activations between them like an assembly line. It reduces per-device memory but can suffer pipeline bubbles unless micro-batching is used."
+  },
+  {
+    "prompt": "what is the KV cache in transformer inference?",
+    "answer": "The KV cache stores the key and value tensors from past tokens so that self-attention does not recompute them at each decoding step. It turns decoding from O(n^2) into O(n) work per new token, at the cost of memory proportional to sequence length."
+  },
+  {
+    "prompt": "what is prompt caching in LLM APIs?",
+    "answer": "Prompt caching stores the model's internal state for a reused prefix (system prompt, few-shot examples, long context) so subsequent requests sharing that prefix skip its recomputation. It reduces cost and TTFT for long, repeated contexts."
+  },
+  {
+    "prompt": "what is semantic caching?",
+    "answer": "Semantic caching stores prior responses keyed by the embedding of the query, returning cached answers for semantically similar new queries. It saves cost and latency but requires careful thresholding to avoid serving stale or wrong answers."
+  },
+  {
+    "prompt": "what is a feedback loop in an ML system?",
+    "answer": "A feedback loop is the mechanism by which user interactions and outcomes are captured, curated, and used to improve future versions of the model or system. Well-designed loops are a key driver of long-term product quality."
+  },
+  {
+    "prompt": "why is feedback important in LLM applications?",
+    "answer": "LLM outputs are probabilistic and user-facing, so real usage reveals failure modes, preferences, and drift that offline evals miss. Feedback fuels evaluation, prompt iteration, fine-tuning data, and routing decisions."
+  },
+  {
+    "prompt": "what is explicit feedback?",
+    "answer": "Explicit feedback is information users intentionally provide about outputs, such as thumbs up/down, star ratings, or textual corrections. It is clear but sparse and potentially biased toward users who care to respond."
+  },
+  {
+    "prompt": "what is implicit feedback?",
+    "answer": "Implicit feedback is inferred from user behavior rather than explicit signals, such as copying an answer, clicking a link, retrying a prompt, or abandoning a session. It is abundant but noisier and must be interpreted carefully."
+  },
+  {
+    "prompt": "what is a data flywheel?",
+    "answer": "A data flywheel is a self-reinforcing loop where product usage generates data that improves the model, which in turn attracts more usage and more data. It is a central mechanism for building durable advantages in ML-driven products."
+  },
+  {
+    "prompt": "what is human-in-the-loop (HITL)?",
+    "answer": "Human-in-the-loop is a design pattern where humans review, correct, or approve AI outputs within the workflow. It is used to catch errors, handle edge cases, label new data, and provide oversight for high-stakes decisions."
+  },
+  {
+    "prompt": "when is HITL especially valuable?",
+    "answer": "For high-stakes or irreversible actions, ambiguous edge cases, early deployment when confidence is low, regulatory compliance, and generating high-quality training/eval data. As confidence grows, HITL can be gradually reduced."
+  },
+  {
+    "prompt": "what is continuous learning in ML systems?",
+    "answer": "Continuous learning is the practice of regularly updating a model with new data rather than training it once. It keeps the model aligned with shifting data distributions, user behavior, and requirements, and requires careful evaluation to avoid regressions."
+  },
+  {
+    "prompt": "what is context window management?",
+    "answer": "Context window management decides what to include in an LLM's prompt under a finite token budget: system instructions, few-shot examples, retrieved documents, prior conversation, and the current user turn. Good management balances relevance, recency, and cost."
+  },
+  {
+    "prompt": "what is context stuffing and what are its risks?",
+    "answer": "Context stuffing packs large amounts of information into the prompt in the hope the model will use it. Risks include increased cost and latency, the 'lost in the middle' effect where middle content is under-attended, and more opportunities for prompt injection."
+  },
+  {
+    "prompt": "what are input guardrails?",
+    "answer": "Input guardrails screen user inputs before they reach the model, checking for PII, prompt injection patterns, disallowed topics, or malformed requests. They can block, sanitize, or route to a different handler."
+  },
+  {
+    "prompt": "what are output guardrails?",
+    "answer": "Output guardrails inspect model outputs before they reach users or downstream systems, checking for toxicity, PII leakage, schema conformance, hallucinations against sources, or policy violations. They can block, redact, or trigger regeneration."
+  },
+  {
+    "prompt": "what is model routing?",
+    "answer": "Model routing sends each request to the most appropriate model based on factors like task type, difficulty, cost, latency, or policy. For example, easy queries go to a small fast model while hard ones go to a larger one."
+  },
+  {
+    "prompt": "what is an LLM gateway?",
+    "answer": "An LLM gateway is a proxy layer that sits between applications and providers, offering a unified API, key management, logging, rate limiting, retries, fallbacks, cost control, and often routing. It centralizes cross-cutting concerns."
+  },
+  {
+    "prompt": "what is orchestration in an AI system?",
+    "answer": "Orchestration coordinates the multiple steps of an AI workflow: prompt construction, retrieval, model calls, tool use, guardrails, caching, and post-processing. Frameworks like LangChain, LlamaIndex, and custom pipelines implement orchestration."
+  },
+  {
+    "prompt": "what is the pipeline (chain) pattern?",
+    "answer": "In the pipeline pattern, steps are executed in a fixed sequence where each step's output feeds the next. It is simple and predictable but less flexible than agentic or DAG-based orchestrations for dynamic workflows."
+  },
+  {
+    "prompt": "what is jailbreaking an LLM?",
+    "answer": "Jailbreaking is coaxing an aligned LLM into producing content it is trained to refuse, via techniques like role-play, hypothetical framings, encoded instructions, or multi-turn manipulation. It exploits gaps in safety training and system prompts."
+  },
+  {
+    "prompt": "what is PII?",
+    "answer": "Personally Identifiable Information (PII) is any data that can identify a specific individual, directly (name, SSN, email) or in combination with other data (birthdate, ZIP, gender). Handling PII is regulated by laws like GDPR and HIPAA."
+  },
+  {
+    "prompt": "how can PII be detected and redacted in a pipeline?",
+    "answer": "Use regex patterns for structured PII (emails, phone numbers, IDs), named-entity recognition models for names and locations, and specialized tools like Microsoft Presidio. Detected spans are masked, tokenized, or replaced with placeholders."
+  },
+  {
+    "prompt": "what is sandboxing in the context of code-executing agents?",
+    "answer": "Sandboxing runs generated or untrusted code in an isolated environment (container, VM, microVM, WASM runtime) with restricted filesystem, network, and syscall access. It limits damage from malicious or buggy code."
+  },
+  {
+    "prompt": "why is sandboxing critical for agents that execute code?",
+    "answer": "Generated code may be incorrect, insecure, or influenced by prompt injection. Without sandboxing, it can exfiltrate data, consume resources, or compromise the host. Sandboxing bounds the blast radius of any such failure."
+  },
+  {
+    "prompt": "what is a memorization attack on a language model?",
+    "answer": "A memorization attack extracts specific training data from a model, often via crafted prompts that trigger verbatim regurgitation. Large models can memorize rare training examples, posing privacy and copyright risks."
+  },
+  {
+    "prompt": "what is training data extraction?",
+    "answer": "Training data extraction is the process of recovering samples from a model's training set by querying the model. It has been demonstrated on large LLMs and is a motivation for deduplication, differential privacy, and careful data governance."
+  },
+  {
+    "prompt": "what is GDPR?",
+    "answer": "The General Data Protection Regulation is the European Union's data protection law, governing how personal data of EU residents is collected, processed, stored, and transferred. It applies to organizations worldwide if they handle EU residents' data."
+  },
+  {
+    "prompt": "what is the 'right to be forgotten'?",
+    "answer": "Under GDPR, individuals can request erasure of their personal data in certain circumstances. For ML, this raises hard questions about removing a person's data's influence from trained models, sometimes requiring retraining or machine unlearning."
+  },
+  {
+    "prompt": "what are copyright implications of training AI on copyrighted data?",
+    "answer": "Training on copyrighted works without permission is legally contested, with active litigation worldwide. Outputs that reproduce substantial portions of training works may infringe. Mitigations include licensing, filtering, opt-out mechanisms, and output checks."
+  },
+  {
+    "prompt": "what is algorithmic bias?",
+    "answer": "Algorithmic bias is systematic unfair treatment of individuals or groups by an AI system, typically reflecting biases in training data, labels, or design choices. It can cause real harm in areas like hiring, lending, and healthcare."
+  },
+  {
+    "prompt": "what is fairness in machine learning?",
+    "answer": "Fairness is the property that an ML system treats individuals or groups equitably by some defined criterion. There are multiple formal definitions (demographic parity, equalized odds, individual fairness) that can be mutually incompatible."
+  },
+  {
+    "prompt": "what is responsible AI?",
+    "answer": "Responsible AI is the practice of designing, developing, and deploying AI systems in ways that are safe, fair, transparent, accountable, and aligned with human values and laws. It spans technical, organizational, and governance practices."
+  },
+  {
+    "prompt": "what is temperature in LLM generation?",
+    "answer": "Temperature scales the logits before softmax: values below 1 make the distribution sharper (more deterministic), above 1 flatten it (more random). Temperature 0 corresponds to greedy decoding."
+  },
+  {
+    "prompt": "what is Retrieval-Augmented Generation (RAG)?",
+    "answer": "RAG augments an LLM's input with relevant documents retrieved from an external corpus at query time. This improves factual grounding, allows the model to use up-to-date and proprietary data, and reduces hallucinations when implemented well."
+  },
+  {
+    "prompt": "what are the main components of a RAG system?",
+    "answer": "A document ingestion pipeline (parsing, chunking, embedding, indexing), a retriever (dense and/or sparse), an optional reranker, a prompt template that injects retrieved context, and the generator LLM. Evaluation and monitoring wrap around the whole system."
+  }
+]

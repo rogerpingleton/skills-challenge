@@ -10,14 +10,16 @@ The app was also inspired by my work developing the OSHA-NIOSH Small Business Ch
 The suggested generated subject matter is stored in a separate repository: https://github.com/rogerpingleton/AI-ML-Engineering-Skills-Checklist
 
 ## Features:
-- Either a micro-RAG system which assesses answers and compares data via an on-device embedding model and on-device vector database
 
-AND/OR
-
-- An adapter trained on the specific educational material
-
+### Stage 1 (current stage)
+- A micro-RAG system which assesses answers and compares data via an on-device embedding model and on-device vector database
 - Ability to question the database of training material (with limited context)
-- Ability to let the user create their own explanation of what the subject matter is.
+
+### Stage 2
+- Ability to allow the user to be quized on specific topics.
+
+### Stage 3
+- Ability to allow the user create their own explanation of what the subject matter entails in a "teach to learn" methodology.
 
 ## Challenges:
 
@@ -31,10 +33,49 @@ AND/OR
 
 ## Project Layout:
 
-TBD
+```
+├── AI-Skills-Challenge
+│   ├── AI-Skills-Challenge
+|   ├── ... # skills challenge app Xcode files
+│   ├── AI-Skills-ChallengeTests
+│   │   ├── AI_Skills_ChallengeTests.swift
+│   │   ├── DataManagerTests.swift
+│   │   ├── DeterminismTests.swift
+│   │   └── RAGSystemTests.swift
+│   └── rag-eval
+│       └── main.swift # commandline rag evaluation tool
+├── data_cleanup_helpers
+│   ├── fix_md_heading.py      # makes the top heading the same as filename
+│   ├── md_to_json.py.         # converts markdown to json
+│   └── remove_code_blocks.py  # removes code blocks from md files
+├── ingestion
+│   └── ingest.py              # ingests data into sqlite db
+├── evaluation
+│   ├── .env.example              # .env example for judge.py
+│   ├── ai_engineering_eval.json  # golden dataset for evaluation
+│   ├── judge.py                  # judges results from evaluation 
+│   ├── run_rag_eval.py           # runs a RAG evaluation
+│   └── run_raw_eval.py           # runs a raw evaluation (no RAG)
+├── LICENSE
+├── Project_Document.pdf
+├── ragingest                  # Swift command line ingest helper
+│   ├── ragingest
+│   │   └── main.swift
+│   └── ragingest.xcodeproj
+│       ├── project.pbxproj
+│       ├── project.xcworkspace
+│       │   ├── contents.xcworkspacedata
+│       │   ├── xcshareddata
+│       │   │   └── swiftpm
+│       │   │       └── configuration
+│       │   └── xcuserdata
+│       │       └── jennywilder.xcuserdatad
+│       │           └── UserInterfaceState.xcuserstate
+│       └── xcuserdata
+└── README.md
+```
 
 ## Installation:
-
-TBD
-
-
+```
+git clone https://github.com/rogerpingleton/skills-challenge.git
+```

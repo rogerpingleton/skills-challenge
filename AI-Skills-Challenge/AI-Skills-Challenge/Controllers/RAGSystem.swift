@@ -75,49 +75,29 @@ public final class RAGSystem {
     }
 
     public func answer(query: String, maxContextTokens: Int = 2400) async throws -> Answer {
-        let retrieved = retrieve(query: query, k: 8)
+        let retrieved = retrieve(query: query, k: 5)
         let packed = packContext(retrieved, budget: maxContextTokens)
 
-//        let instructions = """
-//        You answer questions using ONLY the provided passages. \
-//        If the passages don't contain the answer, say so.
-//        """
         
         let instructions = """
-        Answer all questions in the context of AI Engineering. \
-        Do not attempt to make tool calls. \
-        You answer questions using the provided source material. \
-        If the source material doesn't contain the answer, say so, \
-        but do not mention examples from the source material in your response.
+        You answer questions using the provided source material, \
+        and if the source material doesn't contain the answer, \
+        answer all questions in the context of your expertise in AI Engineering.
         """
         
-//        let instructions = """
-//        You are an assistant with expertise in AI Engineering. \
-//        Do not attempt to make tool calls. \
-//        You answer questions using the provided source material. \
-//        If the source material doesn't contain the answer, say so, \
-//        but do not mention examples from the source material in your response.
-//        """
-        
-        
-//        let instructions = """
-//        You answer questions to the best of your ability using the provided passages. \
-//        Speculate if no passages are provided.
-//        """
 
         let contextBlock = packed.chunks.enumerated().map { idx, rc in
             "[\(idx + 1)] \(rc.chunk.text)"
         }.joined(separator: "\n\n")
         
-        //print("RAG Context Debug: \(contextBlock)\n")
         
         let prompt = Prompt("""
         Passages:
         \(contextBlock)
-
-        Question: \(query)
+        
+        Question: \(query) If the source material does not inlude this, answer in the context of AI Engineering.
         """)
-        //Question: \(query) If the source material does not inlude this, answer in the context of AI Engineering.
+        //
         //        Question: \(query) If the source material does not inlude this, speculate, but tell me this is your best guess.
         
 //        let options = GenerationOptions(
