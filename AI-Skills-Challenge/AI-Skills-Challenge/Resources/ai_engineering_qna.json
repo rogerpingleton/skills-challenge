@@ -1,0 +1,802 @@
+[
+  {
+    "question": "what is the difference between a population and a sample in statistics?",
+    "answer": "A population is the entire set of items of interest, while a sample is a subset of the population used to make inferences. Sampling is used because measuring every member is usually infeasible due to cost, time, or access. The key challenge is sample representativeness — biased sampling (selection bias, survivorship bias) leads to conclusions that don't generalize. In ML, this maps directly to training data: your model learns from a sample but is expected to perform on the broader population, which is why distribution shift between training and production data is one of the most common causes of silent model degradation."
+  },
+  {
+    "question": "what is Bayes' theorem?",
+    "answer": "Bayes' theorem is P(A|B) = P(B|A) * P(A) / P(B). It describes how to update the probability of a hypothesis A given new evidence B, formalizing the idea of revising beliefs in light of data. It underlies Naive Bayes classifiers, Bayesian neural networks, and probabilistic graphical models, and it's the conceptual basis for thinking about LLM outputs as posterior distributions conditioned on the prompt. In production AI systems, Bayesian reasoning is also useful for combining prior knowledge with observed signals — for example, when designing classifiers that incorporate base rates or when reasoning about A/B test results with limited data."
+  },
+  {
+    "question": "what is the difference between variance and standard deviation?",
+    "answer": "Variance is the average of the squared deviations from the mean, while standard deviation is the square root of the variance. Standard deviation is more interpretable because it shares the same units as the original data. Both measure spread, but variance has nicer mathematical properties (it's additive for independent random variables) which is why it appears in loss functions and optimization theory. In ML, variance also has a specific meaning in the bias-variance tradeoff: high-variance models change a lot with small training-data changes (overfitting), while high-bias models are systematically wrong (underfitting)."
+  },
+  {
+    "question": "what is a dot product?",
+    "answer": "The dot product is the sum of the element-wise products of two vectors of equal length, producing a scalar. Geometrically, it equals |a||b|cos(θ), so it measures both magnitude and alignment. It's the foundation of cosine similarity (used everywhere in semantic search), the core operation in attention (Q·K), and a primary building block of matrix multiplication in neural networks. Modern GPUs are essentially massive dot-product accelerators, which is why hardware-software co-design in AI revolves around making dot products fast and energy-efficient."
+  },
+  {
+    "question": "why is matrix multiplication important in machine learning?",
+    "answer": "Matrix multiplication is the core operation in neural networks, used to apply linear transformations to input data at each layer. GPUs and TPUs are optimized for massively parallel matrix multiplication, which is why they dominate ML workloads. The compute cost of training and inference is largely determined by the number and size of matmuls (often measured in FLOPs), and most performance optimization work — kernel fusion, FlashAttention, tensor cores, FP8/INT8 quantization — ultimately targets making matmuls faster or smaller. Understanding matmul shape and memory access patterns is essential for diagnosing why a model is slow."
+  },
+  {
+    "question": "what is an eigenvector?",
+    "answer": "An eigenvector of a matrix is a non-zero vector whose direction is unchanged when the matrix is applied to it; it is only scaled by a factor called the eigenvalue. Eigenvectors capture the principal directions of a linear transformation. In ML they are central to PCA (eigenvectors of the covariance matrix give principal components), spectral clustering, PageRank, and stability analysis of training dynamics. The 'spectral norm' (largest eigenvalue of a matrix's transpose times itself) also appears in Lipschitz analysis of neural networks and in techniques like spectral normalization for stabilizing GANs."
+  },
+  {
+    "question": "what is the difference between a scalar, vector, matrix, and tensor?",
+    "answer": "A scalar is a single number (0D), a vector is a 1D array, a matrix is a 2D array, and a tensor is a generalization to any number of dimensions (N-D). In deep learning, activations and weights are represented as tensors — for example, a batch of images is typically a 4D tensor of shape (batch, channels, height, width). Tensor shape mismatches are one of the most common sources of bugs in ML code, and operations like broadcasting, reshaping, and transposing dominate practical model implementation. Frameworks like PyTorch and JAX use tensor abstractions that automatically dispatch to optimized GPU kernels."
+  },
+  {
+    "question": "what is a derivative and why is it used in machine learning?",
+    "answer": "A derivative measures the rate at which a function's output changes with respect to a change in its input. In ML, derivatives (gradients) are used to determine how to adjust model parameters to minimize the loss function during training. Automatic differentiation engines like PyTorch's autograd or JAX's grad compute these derivatives efficiently by tracing the computation graph and applying the chain rule. Modern deep learning is essentially the engineering of differentiable programs, and most architectural innovations (residual connections, normalization layers, attention) can be understood as ways to make gradients flow more reliably during training."
+  },
+  {
+    "question": "what is the chain rule in calculus?",
+    "answer": "The chain rule states that the derivative of a composite function f(g(x)) is f'(g(x)) * g'(x). It is the mathematical basis of backpropagation, allowing gradients to flow through multiple layers of a neural network. In a deep network, gradients are products of many partial derivatives, which is why vanishing gradients (products shrinking toward 0) and exploding gradients (products blowing up) are central training challenges. Innovations like ReLU activations, batch normalization, and residual connections were largely motivated by ensuring well-behaved chain-rule products through hundreds of layers."
+  },
+  {
+    "question": "what is the difference between FP32 and FP16?",
+    "answer": "FP32 is 32-bit floating point with 1 sign bit, 8 exponent bits, and 23 mantissa bits. FP16 is 16-bit with 1 sign, 5 exponent, and 10 mantissa bits. FP16 halves memory and roughly doubles arithmetic throughput on supporting hardware, but its smaller range can cause overflow during training. Mixed-precision training (FP16 forward/backward with FP32 master weights and a loss scaler) became standard to capture FP16's speed while preserving stability. For inference, pure FP16 is often fine, and modern GPUs accelerate it dramatically through tensor cores."
+  },
+  {
+    "question": "what is bfloat16 and why is it popular in deep learning?",
+    "answer": "bfloat16 is a 16-bit format with 8 exponent bits (like FP32) and 7 mantissa bits. It keeps FP32's dynamic range, which makes training more stable than FP16, while still halving memory usage. It was originally developed by Google for TPUs and is now broadly supported on NVIDIA Ampere/Hopper, AMD MI-series, and Apple silicon. Most large-scale LLM training today uses BF16 (or BF16 + FP32 master weights), because it removes the need for loss scaling and is more forgiving than FP16 during the unstable early phases of training."
+  },
+  {
+    "question": "what is INT8 quantization?",
+    "answer": "INT8 quantization converts model weights and/or activations from floating-point to 8-bit integers. This reduces model size by ~4x versus FP32 and accelerates inference on integer-optimized hardware, at the cost of some accuracy. It typically requires a calibration step to determine the dynamic range (scale and zero-point) for each tensor or channel. Popular libraries include bitsandbytes, GPTQ, AWQ, and SmoothQuant, each making different tradeoffs around weight-only vs. weight+activation quantization, calibration data needs, and outlier handling — outliers in activations are a major source of accuracy loss and motivate group-wise or per-channel scales."
+  },
+  {
+    "question": "what is Big O notation?",
+    "answer": "Big O notation describes the asymptotic upper bound on the runtime or memory of an algorithm as input size grows. For example, O(n) means linear scaling, O(log n) logarithmic, and O(n^2) quadratic. In AI engineering, Big O matters acutely for attention (O(n²) in sequence length, motivating FlashAttention and sparse attention), for vector search (linear scan vs. logarithmic ANN), and for context-window economics where a 4× longer prompt is 16× more attention compute, not 4×. Understanding asymptotic complexity helps anticipate where systems will break under scale."
+  },
+  {
+    "question": "what is the difference between an array and a linked list?",
+    "answer": "An array stores elements contiguously in memory with O(1) indexed access but O(n) insertions in the middle. A linked list stores elements in nodes with pointers, offering O(1) insertion given a node but O(n) access by index. Arrays are far more cache-friendly because of contiguous memory layout, which is why almost all modern ML data structures (tensors, KV caches, embedding tables) use array-like layouts despite the insertion cost. Linked lists are rare in performance-critical AI code but appear in some scheduling and graph structures."
+  },
+  {
+    "question": "what is a hash map and its typical time complexity?",
+    "answer": "A hash map is a data structure that maps keys to values using a hash function to index into an array of buckets. It offers average O(1) insertion, deletion, and lookup, though worst case can be O(n) with many collisions. Hash maps are ubiquitous in AI infrastructure: tokenizer vocabularies, prompt caches, deduplication of training data (often via MinHash or SimHash variants), feature stores, and LRU caches in inference servers. The choice of hash function matters for security (hash flooding attacks) and for distribution evenness, especially at scale."
+  },
+  {
+    "question": "what is supervised learning?",
+    "answer": "Supervised learning trains models on labeled data, where each input has a known target output. The model learns to map inputs to outputs, as in classification or regression tasks. The cost of acquiring high-quality labels is often the dominant constraint in supervised projects, which is why areas like active learning, weak supervision, and synthetic data generation receive so much attention. In modern LLM workflows, supervised fine-tuning (SFT) on instruction-response pairs is a key step in turning a base model into an assistant, and label quality (not quantity) is usually the deciding factor for downstream performance."
+  },
+  {
+    "question": "what is unsupervised learning?",
+    "answer": "Unsupervised learning finds patterns in unlabeled data without explicit target outputs. Common tasks include clustering (k-means, DBSCAN), dimensionality reduction (PCA, t-SNE, UMAP), anomaly detection, and density estimation. While 'pure' unsupervised learning was historically less commercially impactful than supervised, its conceptual descendants — self-supervised pretraining and contrastive learning — now dominate, since they unlock the use of vast unlabeled corpora. Embeddings used in retrieval are typically learned with self-supervised or weakly-supervised objectives."
+  },
+  {
+    "question": "what is self-supervised learning?",
+    "answer": "Self-supervised learning generates its own labels from the structure of the data, such as predicting the next token in a sentence or a masked patch of an image. It enables training on massive unlabeled corpora and underlies most modern LLM pretraining. The key insight is that prediction tasks defined on raw data (next-token, masked-token, contrastive pairs) force the model to learn rich representations as a side effect. SSL has unified previously separate fields — language, vision, speech, code — under a common training paradigm and is the reason scaling laws have dominated the past several years."
+  },
+  {
+    "question": "what is linear regression?",
+    "answer": "Linear regression models the relationship between input features and a continuous output as a linear combination of the features plus a bias. It is trained by minimizing the mean squared error between predictions and targets, typically with a closed-form solution or gradient descent. Despite its simplicity, it remains a strong baseline, an interpretable diagnostic tool, and a building block: a logistic regression is just linear regression with a sigmoid, and the final layer of most classification networks is a linear projection. Always run a linear regression baseline before assuming you need a neural network."
+  },
+  {
+    "question": "what is k-means clustering?",
+    "answer": "K-means is an unsupervised algorithm that partitions data into k clusters by iteratively assigning points to the nearest cluster center and updating centers to the mean of assigned points. It requires choosing k in advance and is sensitive to initialization (k-means++ helps) and to the assumption that clusters are roughly spherical and equally sized. In AI engineering it shows up in vector index construction (IVF indexes use k-means to partition the embedding space), in prompt clustering for analytics, and in coarse data segmentation. For non-spherical clusters, consider DBSCAN or HDBSCAN; for soft clustering, GMMs."
+  },
+  {
+    "question": "what is a decision tree?",
+    "answer": "A decision tree is a model that makes predictions by recursively splitting the feature space based on simple rules learned from the data. They are interpretable but can overfit, which is often mitigated with ensembles like random forests or gradient boosting. Gradient-boosted tree libraries (XGBoost, LightGBM, CatBoost) remain state-of-the-art on tabular data and routinely beat deep learning on structured business data. In an AI engineering stack, trees are still the right default for non-text/non-image tabular features and are commonly used as classifiers within LLM pipelines (e.g., guardrail classifiers, intent routing)."
+  },
+  {
+    "question": "what is accuracy as a classification metric?",
+    "answer": "Accuracy is the fraction of predictions that are correct out of all predictions. It can be misleading on imbalanced datasets, where a trivial classifier can score high by always predicting the majority class — for fraud detection with 0.1% positives, 99.9% accuracy is achieved by predicting 'not fraud' always. For imbalanced or cost-asymmetric problems, prefer precision/recall, F1, AUC, or calibrated probability metrics. Accuracy also implicitly assumes equal cost of errors, which is rarely true in real-world AI applications where false positives and false negatives have different consequences."
+  },
+  {
+    "question": "what is the difference between precision and recall?",
+    "answer": "Precision is the fraction of positive predictions that are actually positive (TP / (TP + FP)). Recall is the fraction of actual positives that were correctly identified (TP / (TP + FN)). The choice between optimizing them depends on the cost of errors: medical screening typically prioritizes recall (don't miss disease), while spam filters often prioritize precision (don't flag legitimate mail). In AI guardrails, this tradeoff is explicit — a strict toxicity classifier raises false-positive rates and harms helpfulness, while a permissive one raises false-negative rates and harms safety."
+  },
+  {
+    "question": "what is the F1 score?",
+    "answer": "The F1 score is the harmonic mean of precision and recall: 2 * (precision * recall) / (precision + recall). It balances the two metrics and is useful on imbalanced classification tasks. F1 weights precision and recall equally; F-beta lets you emphasize one over the other (F2 weights recall higher, F0.5 weights precision higher). Note that F1 implicitly assumes positive-class focus and ignores true negatives — for tasks where you care about both classes (e.g., binary moderation), look at macro-F1 (averaged across classes) or per-class metrics."
+  },
+  {
+    "question": "what is a confusion matrix?",
+    "answer": "A confusion matrix is a table that shows the counts of true positives, false positives, true negatives, and false negatives from a classifier's predictions. It is the basis for computing accuracy, precision, recall, and other metrics. In multi-class problems it generalizes to a K×K matrix where the diagonal contains correct predictions. Beyond aggregate metrics, examining the off-diagonal entries reveals which classes are confused with which — this is often more actionable than a single F1 score, since it directly suggests where to add training data or refine class definitions."
+  },
+  {
+    "question": "why do we split data into training, validation, and test sets?",
+    "answer": "The training set fits the model, the validation set tunes hyperparameters and selects models without biasing the final evaluation, and the test set provides an unbiased estimate of performance on unseen data. Mixing these roles leads to over-optimistic results — you can effectively 'overfit' the test set by repeatedly tuning to it. For time-series or user-behavior data, simple random splits leak information and you need temporal or user-based splits. In LLM applications, an additional concern is whether your eval set has leaked into the model's pretraining data (a major problem for public benchmarks)."
+  },
+  {
+    "question": "what is cross-validation?",
+    "answer": "Cross-validation splits the training data into k folds, training on k-1 and validating on the remaining fold, then averaging results. It gives a more reliable estimate of generalization than a single train/validation split, especially on small datasets. Stratified k-fold preserves class proportions; group k-fold prevents the same entity (user, document) from appearing in both train and validation. CV is rarely used at LLM scale because retraining is too expensive, but it remains the standard for tabular ML and for evaluating classifier-based components of larger AI systems (rerankers, guardrails, intent classifiers)."
+  },
+  {
+    "question": "what is overfitting?",
+    "answer": "Overfitting happens when a model learns the training data too closely, including its noise, and fails to generalize to new data. It is often indicated by a large gap between low training error and high validation error. Counterintuitively, modern very-large neural networks can memorize their training data and still generalize well — a phenomenon sometimes called 'benign overfitting' or 'double descent.' For practical AI engineering, the more pressing analog of overfitting at LLM scale is overfitting to evaluation sets and to specific user populations, both of which silently inflate offline metrics."
+  },
+  {
+    "question": "what is underfitting?",
+    "answer": "Underfitting occurs when a model is too simple to capture the underlying patterns in the data, resulting in high error on both training and validation sets. It is typically solved by using a more expressive model, better features, longer training, or addressing optimization issues like a too-low learning rate. In LLM applications, underfitting often manifests differently: a small base model lacks the capacity for a task, or a fine-tuning run was too short or too low-LR to actually move the model's behavior. Diagnosing this means inspecting training curves, not just final eval scores."
+  },
+  {
+    "question": "name three common techniques to prevent overfitting.",
+    "answer": "Common techniques include regularization (L1, L2, dropout), gathering more training data, and early stopping based on validation loss. Data augmentation (paraphrasing, back-translation, image transforms) and simpler model architectures also help. For deep networks, weight decay and dropout are the most widely used; for small datasets, transfer learning from a pretrained model often beats any regularization scheme. In LLM fine-tuning specifically, the strongest 'regularizer' is usually using a small learning rate, few epochs, and PEFT methods like LoRA that limit how much the base model can change."
+  },
+  {
+    "question": "what is a neural network?",
+    "answer": "A neural network is a function composed of layers of interconnected units (neurons), each applying a linear transformation followed by a non-linear activation. Parameters are learned via gradient-based optimization to minimize a loss. The universal approximation theorem says even a single hidden layer can approximate any continuous function in principle, but depth (rather than width) is what makes networks practically learnable on real data. Modern neural networks span MLPs, CNNs, RNNs, transformers, graph networks, and diffusion models, all sharing the same underlying differentiable-program paradigm."
+  },
+  {
+    "question": "what is backpropagation?",
+    "answer": "Backpropagation is the algorithm that computes gradients of a loss function with respect to every weight in a neural network by applying the chain rule from the output layer backward. These gradients are then used by an optimizer to update weights. Modern frameworks implement backprop via reverse-mode automatic differentiation on a dynamic computation graph (PyTorch) or compiled traces (JAX, TensorFlow). The memory cost of backprop scales with activation size — gradient checkpointing trades compute for memory by recomputing activations during the backward pass, which is essential for training large transformers."
+  },
+  {
+    "question": "what is gradient descent?",
+    "answer": "Gradient descent is an optimization algorithm that iteratively updates parameters in the opposite direction of the loss gradient, scaled by a learning rate. Variants include stochastic gradient descent (SGD) with mini-batches and momentum-based methods. Modern LLM training almost universally uses adaptive variants like AdamW or its memory-efficient cousins (Adafactor, Lion, Sophia). Hyperparameters like learning rate schedule, warmup steps, gradient clipping threshold, and batch size matter enormously for stability — getting these wrong is a more common cause of training failure than architectural issues."
+  },
+  {
+    "question": "what is the difference between a CNN and an RNN?",
+    "answer": "Convolutional Neural Networks (CNNs) use shared convolutional filters to detect local spatial patterns, typically in images, and are highly parallelizable on GPUs. Recurrent Neural Networks (RNNs) process sequential data by maintaining a hidden state that is updated at each step, but their inherent sequentiality limits parallelism. Transformers have largely displaced both for many applications because they capture long-range dependencies better than RNNs and scale better than CNNs for non-grid data, though CNNs remain competitive for some vision tasks (especially efficiency-constrained ones) and RNN variants like Mamba/state-space models are seeing renewed interest for very long sequences."
+  },
+  {
+    "question": "what is dropout?",
+    "answer": "Dropout is a regularization technique where, during training, each neuron's output is zeroed with some probability p. This prevents co-adaptation of neurons and reduces overfitting. At inference, all neurons are active and outputs are scaled appropriately. Dropout is less common in modern transformer training than it was in earlier deep learning eras — large LLMs often train with little or no dropout because the model is data-limited rather than capacity-limited. However, dropout-like techniques (attention dropout, stochastic depth) are still used and dropout-at-inference is sometimes used to estimate uncertainty (Monte Carlo Dropout)."
+  },
+  {
+    "question": "what is batch normalization?",
+    "answer": "Batch normalization normalizes the activations of a layer across a mini-batch to have zero mean and unit variance, then applies learned scale and shift parameters. It stabilizes and accelerates training in convolutional networks. However, batch norm has known issues with small batches and with sequence models, which is why transformers use layer normalization instead. Other variants include group norm (popular in vision with small batches), instance norm (style transfer), and RMSNorm (a simplified layer norm used in LLaMA and many recent LLMs)."
+  },
+  {
+    "question": "what is a learning rate?",
+    "answer": "The learning rate is the step size used by an optimizer when updating model parameters in the direction of the negative gradient. Too high causes divergence; too low causes slow or stuck training. In practice, learning rate schedules — warmup followed by cosine decay or linear decay — outperform constant rates and are nearly universal in transformer training. The peak learning rate is often the single most important hyperparameter, and rules of thumb tie it to batch size and model size; getting it wrong by a factor of 10 will destroy a training run."
+  },
+  {
+    "question": "what is the Adam optimizer?",
+    "answer": "Adam (Adaptive Moment Estimation) is an optimizer that maintains per-parameter exponentially decaying averages of past gradients (first moment) and squared gradients (second moment) to adaptively scale updates. It is widely used as a robust default. AdamW, which decouples weight decay from the gradient update, is the actual standard for transformer training because vanilla Adam's coupling causes weight decay to interact poorly with adaptive learning rates. Adam's main downside is its memory cost — it stores two extra tensors per parameter, which for a 70B model means ~280GB extra; this motivates lightweight optimizers like Adafactor or 8-bit Adam variants."
+  },
+  {
+    "question": "what is a loss function?",
+    "answer": "A loss function quantifies how far a model's predictions are from the ground truth, producing a scalar that the optimizer tries to minimize. Common examples are cross-entropy for classification (and language modeling) and mean squared error for regression. Choice of loss has profound consequences: cross-entropy with softmax is the default for token prediction in LLMs, while contrastive losses (InfoNCE) are standard for embedding training. For preference learning, custom losses like the DPO loss or pairwise ranking losses encode comparison rather than absolute targets. The loss you optimize is rarely identical to the metric you ultimately care about, which is why eval and training objectives need separate attention."
+  },
+  {
+    "question": "what is regularization in machine learning?",
+    "answer": "Regularization adds constraints or penalties to the loss function to discourage overly complex models and reduce overfitting. Common forms include L1 (lasso, encourages sparsity), L2 (ridge/weight decay, shrinks weights), and dropout. In modern deep learning, weight decay remains a default; data augmentation, early stopping, and model architecture choices (e.g., normalization layers) act as implicit regularizers. For LLMs, the strongest practical regularizers during fine-tuning are limited training (small LR, few epochs) and PEFT, which constrains the parameter space directly rather than penalizing it."
+  },
+  {
+    "question": "what is the difference between a list and a tuple in Python?",
+    "answer": "Lists are mutable (elements can be changed, added, removed), while tuples are immutable once created. Tuples are slightly faster, use less memory, and can be used as dictionary keys or set members; lists cannot. In ML code, tuples are conventional for fixed-shape returns (e.g., (loss, logits)), tensor shapes, and dataset records, while lists are used for variable collections. The immutability of tuples also makes them safer to pass between threads or processes without accidental mutation."
+  },
+  {
+    "question": "what is a Python generator?",
+    "answer": "A generator is a function that produces a sequence of values lazily using the yield keyword, rather than returning them all at once. Generators are memory-efficient for large or infinite sequences. They're the foundation of streaming APIs in AI engineering — token-by-token LLM streaming is typically implemented as a generator (or async generator) over server-sent events. They're also widely used in data pipelines (e.g., PyTorch DataLoader workers), where loading the entire dataset into memory is infeasible. Use itertools and yield-from for composable iterator pipelines."
+  },
+  {
+    "question": "what is the Global Interpreter Lock (GIL) in CPython?",
+    "answer": "The GIL is a mutex in CPython that allows only one thread to execute Python bytecode at a time. It simplifies memory management but limits CPU-bound multi-threading, making multiprocessing or async I/O preferable for parallelism. For AI workloads this is often less limiting than it sounds, because the heavy lifting happens in NumPy/PyTorch C++/CUDA kernels that release the GIL. For I/O-bound workloads (LLM API calls, retrieval, web scraping) asyncio is the right tool. Python 3.13 introduced experimental no-GIL builds, which may reshape this story over time."
+  },
+  {
+    "question": "what does the grep command do?",
+    "answer": "grep searches input for lines matching a given regular expression pattern and prints them. It is commonly used to filter logs, find code patterns, or locate text in files. In AI engineering workflows, grep (and faster cousins like ripgrep) is essential for log triage, debugging inference servers, and quickly inspecting large training datasets or eval outputs. Combined with pipes (e.g., `grep ERROR | wc -l` or `tail -f log | grep latency`), it's a foundational tool for production debugging when GUIs and dashboards aren't available."
+  },
+  {
+    "question": "what is the difference between | and > in the Unix shell?",
+    "answer": "The pipe (|) sends the standard output of one command as input to another command. The redirect (>) writes standard output to a file, overwriting it (>> appends instead). Pipes enable composition of small tools — the Unix philosophy applied to data pipelines. In AI engineering, this is especially useful for ad-hoc data inspection (`zcat data.gz | head -100 | jq .text | wc -w`) and for chaining tools that don't need to fit in memory. Note that pipes can hide errors in earlier stages — use `set -o pipefail` in shell scripts."
+  },
+  {
+    "question": "what is the difference between git merge and git rebase?",
+    "answer": "git merge integrates changes by creating a merge commit that preserves both branches' histories. git rebase replays commits from one branch onto another, producing a linear history but rewriting commits. Merge preserves what actually happened, while rebase produces a cleaner narrative. The conventional rule is 'rebase local, merge remote' — never rebase commits that have been pushed and shared. For ML projects with experiment branches and shared notebooks, merge is often safer because rebase can scramble notebook histories and break reproducibility."
+  },
+  {
+    "question": "what is a pull request?",
+    "answer": "A pull request is a mechanism (on platforms like GitHub/GitLab) to propose merging changes from one branch into another. It enables code review, discussion, and CI checks before changes are integrated. In AI engineering, PRs are increasingly the unit of evaluation: a prompt change, a model swap, or a guardrail update should each be a PR with attached eval results, not a silent config edit. CI pipelines for AI code often include not just unit tests but offline eval runs and cost/latency regression checks before merging."
+  },
+  {
+    "question": "what is a REST API?",
+    "answer": "REST (Representational State Transfer) is an architectural style for web APIs that uses standard HTTP methods (GET, POST, PUT, DELETE) to operate on resources identified by URLs. Responses are typically JSON and interactions are stateless. Most LLM provider APIs (OpenAI, Anthropic, Google) follow REST conventions for their messages endpoints. Stateless design is a tradeoff in conversational AI — clients must send the full conversation history each turn, which is why prompt caching exists. Alternatives like gRPC and WebSockets are used when streaming or low-latency bidirectional communication matters."
+  },
+  {
+    "question": "what is the difference between PUT and POST in HTTP?",
+    "answer": "POST is used to create a new resource, typically at a collection endpoint; repeated POSTs may create multiple resources. PUT is used to create or replace a resource at a specific URL and is idempotent. Idempotency matters in AI systems because retries are common — a flaky network connection during an LLM call can lead to duplicate work or duplicate side effects unless the API is idempotent or you use idempotency keys. Most LLM completion APIs are POSTs (each call generates new output), and idempotency keys are how clients deduplicate retries."
+  },
+  {
+    "question": "what is a container?",
+    "answer": "A container is a lightweight, portable unit that packages an application with its dependencies and runs in an isolated user space on a shared OS kernel. Containers start faster and use fewer resources than full virtual machines. In AI engineering, containers solve the 'works on my machine' problem for ML environments, where CUDA versions, cuDNN, Python versions, and library combinations are notoriously fragile. They also enable reproducible deployments to Kubernetes, serverless platforms, and inference frameworks like Triton. Note that GPU containers require NVIDIA Container Toolkit and matching host driver versions."
+  },
+  {
+    "question": "what is Docker?",
+    "answer": "Docker is a platform for building, shipping, and running containerized applications. It provides a standard image format, a runtime, and tooling like Dockerfiles to define how images are built. For AI workloads, NVIDIA's CUDA base images and frameworks like Triton Inference Server, vLLM, and TGI are typically distributed as Docker images. Image size matters at scale — a 20GB ML image with model weights baked in costs in pull time, registry storage, and cold-start latency. Multi-stage builds, layer caching, and separating model weights from images (downloaded at startup) are common optimization patterns."
+  },
+  {
+    "question": "which are the three largest public cloud providers?",
+    "answer": "Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP). Each offers compute, storage, networking, and managed ML/AI services at global scale. For AI workloads specifically, GPU availability has become a major differentiator — H100/H200 capacity is constrained on all three, and specialized AI clouds (CoreWeave, Lambda Labs, Crusoe) have emerged. Each hyperscaler also has a preferred LLM strategy (AWS-Bedrock-Anthropic, Azure-OpenAI, GCP-Vertex-Gemini), which influences pricing, regional availability, and integration depth."
+  },
+  {
+    "question": "what is the difference between IaaS, PaaS, and SaaS?",
+    "answer": "IaaS provides raw infrastructure like VMs and storage (e.g., EC2). PaaS provides a managed runtime or platform (e.g., App Engine). SaaS provides fully managed applications (e.g., Gmail). For AI, the analogous spectrum runs from raw GPUs (IaaS) through managed inference platforms like Bedrock or Vertex (PaaS) to fully hosted assistants (SaaS). Choosing the right level is a build/buy decision driven by team capacity, customization needs, latency/cost requirements, and data residency constraints — most teams shouldn't run their own GPU clusters until usage volume justifies it."
+  },
+  {
+    "question": "what are the three pillars of observability?",
+    "answer": "Metrics (numerical measurements over time), logs (discrete timestamped events), and traces (causally linked spans across services). Together they help understand and debug distributed systems. In AI systems, a fourth de facto pillar has emerged: prompt/completion logging for every model call, with full inputs and outputs, used both for debugging and for building eval datasets. OpenTelemetry has become the standard for instrumenting metrics and traces, and AI-specific tools (LangSmith, Langfuse, Helicone, Arize, WhyLabs) layer on top with trace structures designed for chains, agents, and RAG pipelines."
+  },
+  {
+    "question": "what is the difference between metrics and logs?",
+    "answer": "Metrics are numerical time series suitable for aggregation and alerting (e.g., request count, latency). Logs are timestamped textual records of discrete events with richer context but higher storage and query cost. Metrics are cheap and fast to query at scale (Prometheus, Datadog) but have limited cardinality; logs are expensive but searchable for individual events (Elasticsearch, Loki). For LLM systems, you typically need both: aggregate metrics on TTFT/TPOT/cost for alerting, plus full request/response logs for debugging specific failures and constructing eval sets from real traffic."
+  },
+  {
+    "question": "what is the difference between unit testing and integration testing?",
+    "answer": "Unit tests verify a single function or class in isolation, often with mocked dependencies. Integration tests verify that multiple components work together correctly, including external services like databases. For AI systems, this maps to: unit-test deterministic logic (parsing, validators, schema), integration-test the pipeline with stubbed model responses, and use a separate eval suite for the actual LLM behavior. Eval datasets, golden outputs, and snapshot tests are AI-specific patterns that supplement traditional testing for non-deterministic components."
+  },
+  {
+    "question": "how do you test non-deterministic LLM outputs?",
+    "answer": "Use approaches like assertions on structural constraints (JSON schema, required fields), semantic similarity thresholds against reference answers, LLM-as-judge evaluations against rubrics, and fixing seeds/temperature where supported. Golden datasets with human-verified outputs complement these for regression detection. Run each prompt N times to estimate variance, not just a single sample. For agent behaviors, trajectory-level tests (did the agent call the right tool with reasonable arguments) are often more reliable than final-answer matches. The goal is statistical regression detection, not bit-for-bit equality."
+  },
+  {
+    "question": "what is the transformer architecture?",
+    "answer": "The transformer is a neural network architecture introduced in the 2017 paper 'Attention Is All You Need' that relies entirely on attention mechanisms rather than recurrence or convolution. It is the foundation of modern LLMs like GPT and Claude. Key advantages over RNNs are full parallelism during training (since attention sees the entire sequence at once) and direct modeling of long-range dependencies. Modern variants differ in normalization (pre-norm vs post-norm), positional encoding (RoPE, ALiBi), attention variants (MHA vs GQA vs MQA), and activation functions (SwiGLU is now common), but the core encoder/decoder block structure has been remarkably stable."
+  },
+  {
+    "question": "what are the main components of a transformer block?",
+    "answer": "A transformer block typically contains multi-head self-attention, a feed-forward network (MLP), layer normalization, and residual connections around each sub-layer. Decoder blocks add masked self-attention and cross-attention. The MLP is typically 4× the hidden size and contains roughly 2/3 of the parameters in a transformer (with attention being only ~1/3). Modern variants like LLaMA use RMSNorm instead of LayerNorm, SwiGLU instead of GeLU, and pre-normalization (LN before sub-layer rather than after) for training stability."
+  },
+  {
+    "question": "what is positional encoding in transformers?",
+    "answer": "Positional encoding injects information about the position of each token into its embedding, since pure attention is order-agnostic. Original transformers used sinusoidal encodings; modern LLMs often use learned or relative schemes like RoPE or ALiBi. RoPE (Rotary Position Embedding) has become dominant because it generalizes better to longer sequences than absolute embeddings — many context-extension techniques (NTK-aware scaling, YaRN, position interpolation) build on RoPE specifically. ALiBi adds a position-dependent bias to attention scores and was used in some Mosaic models."
+  },
+  {
+    "question": "what is a residual (skip) connection?",
+    "answer": "A residual connection adds a layer's input to its output (y = x + F(x)), enabling gradients to flow directly backward. This allows training of very deep networks, including transformers. Originally introduced in ResNet for vision, residuals proved essential for any deep architecture: without them, gradients vanish through dozens of layers. The 'residual stream' interpretation in mechanistic interpretability views the running sum as a shared bus that successive layers read from and write to, which has become a useful frame for understanding what individual layers and attention heads contribute."
+  },
+  {
+    "question": "what is layer normalization?",
+    "answer": "Layer normalization normalizes a layer's activations across the feature dimension for each example, rather than across a batch as in batch norm. It is preferred in transformers because it works well with variable-length sequences and small batches. Modern LLMs increasingly use RMSNorm, a simplified variant that drops the mean-centering and only divides by the root-mean-square; it's slightly cheaper and works empirically as well. LLaMA, Mistral, and most recent open models use RMSNorm. The placement of normalization (pre-norm vs post-norm) also matters: pre-norm is more stable for very deep models."
+  },
+  {
+    "question": "what is self-attention?",
+    "answer": "Self-attention computes a weighted sum of all token representations in a sequence for each position, with weights determined by the similarity between a query and all keys. This lets each token directly attend to any other token in the sequence. Its O(n²) cost in sequence length n is the main bottleneck for long contexts and motivates a wide ecosystem of optimizations: FlashAttention (memory-IO-aware exact attention), sliding-window attention, sparse attention, and linear attention variants. KV caching during decoding turns this into O(n) per generated token at inference."
+  },
+  {
+    "question": "what is multi-head attention?",
+    "answer": "Multi-head attention runs several attention operations in parallel with different learned projections, then concatenates the results. Each head can learn to focus on different types of relationships between tokens. Modern LLMs often use Grouped-Query Attention (GQA) or Multi-Query Attention (MQA) variants, where multiple Q heads share fewer K/V heads — this dramatically reduces KV cache size during inference, which is the main memory bottleneck for long-context decode. LLaMA 2/3, Mistral, and most recent open models use GQA for this reason."
+  },
+  {
+    "question": "what are Q, K, and V in attention?",
+    "answer": "Q (query), K (key), and V (value) are linear projections of the input. Attention weights are computed from the scaled dot product of Q and K (divided by √d_k for stability), passed through softmax, then applied to V to produce the output. Intuitively: queries ask, keys advertise, values carry content. In practice, Q, K, V are produced by three weight matrices that account for a substantial fraction of the model's parameters, and the K/V tensors are what gets cached during autoregressive decoding to avoid recomputation."
+  },
+  {
+    "question": "what is tokenization in NLP?",
+    "answer": "Tokenization is the process of splitting text into discrete units (tokens) that a model can process as integer IDs. Tokens may be words, subwords, or bytes depending on the tokenizer. For AI engineering, tokenization has direct cost and behavior implications: API pricing is per-token, context windows are measured in tokens, and a poor tokenizer fit (e.g., on code or non-English languages) inflates costs and degrades quality. Different LLM families use different tokenizers (GPT's tiktoken, LLaMA's SentencePiece variants), so token counts are not portable across models."
+  },
+  {
+    "question": "what is Byte-Pair Encoding (BPE)?",
+    "answer": "BPE is a subword tokenization algorithm that starts with individual characters (or bytes) and iteratively merges the most frequent adjacent pairs to build a fixed-size vocabulary. It balances vocabulary size against token sequence length. Modern LLMs typically use byte-level BPE, which guarantees no out-of-vocabulary tokens because every input can fall back to bytes. SentencePiece and tiktoken are popular implementations. The training corpus used for tokenizer training matters: a tokenizer trained primarily on English will fragment Chinese, code, or rare scripts inefficiently, which is why some recent models use larger or multilingual-trained vocabularies."
+  },
+  {
+    "question": "why is subword tokenization preferred over word-level tokenization?",
+    "answer": "Subword tokenization handles rare and out-of-vocabulary words by splitting them into known pieces, bounds vocabulary size, and better handles morphologically rich languages and code. Word-level tokenization suffers from huge vocabularies, many OOV tokens, and poor cross-lingual generalization. Character-level tokenization avoids OOV but produces very long sequences. Subwords are the sweet spot, capturing common roots and morphology while still segmenting rare words. The tradeoff is that whitespace, casing, and exact strings are encoded subtly — a fact that matters when prompting (e.g., ' Hello' vs 'Hello' tokenize differently and the model has learned that distinction)."
+  },
+  {
+    "question": "what is Supervised Fine-Tuning (SFT)?",
+    "answer": "SFT continues training a pretrained model on labeled example pairs (e.g., prompt -> desired response) using standard supervised learning (cross-entropy on response tokens). It teaches the model task formats and desired behaviors. SFT is typically the first post-training step, transforming a base completion model into something that follows instructions. Data quality dominates quantity — small numbers of high-quality, diverse examples (Anthropic's, OpenAI's, and Meta's data curation processes are famously rigorous) often outperform much larger noisy datasets. SFT alone is insufficient for safety and nuanced preference handling, which motivates subsequent RLHF or DPO."
+  },
+  {
+    "question": "what is RLHF?",
+    "answer": "Reinforcement Learning from Human Feedback trains a model to produce outputs preferred by humans by first training a reward model on human preference comparisons (A vs B), then fine-tuning the LLM to maximize that reward, typically with PPO. RLHF was the technique behind ChatGPT's launch and is core to most aligned commercial LLMs. It introduces challenges like reward hacking (the model exploits reward-model quirks rather than producing genuinely better output) and KL regularization is added to keep the model close to the SFT initialization. RLHF is operationally complex and expensive, which is why simpler alternatives like DPO have gained traction."
+  },
+  {
+    "question": "what is Direct Preference Optimization (DPO)?",
+    "answer": "DPO optimizes a language model directly on preference data without training a separate reward model or using RL. It reframes the RLHF objective as a simple classification-like loss, making training simpler and more stable. DPO has become a popular alternative to RLHF because it requires less infrastructure and is reproducible at smaller scales. Variants like IPO, KTO, ORPO, and SimPO address specific limitations (length bias, single-example labels, joint SFT+preference training). The general lesson is that direct preference optimization is now a family of techniques, not a single algorithm."
+  },
+  {
+    "question": "what is the typical order of post-training stages for an LLM assistant?",
+    "answer": "A common sequence is: pretraining on a large corpus (next-token prediction), supervised fine-tuning on instruction/response pairs (SFT), then preference optimization (RLHF or DPO) to align with human preferences, followed by safety-specific training and red-teaming. Some labs add a 'mid-training' stage with high-quality long-context or domain-specific data between pretraining and SFT, and reasoning models add an RL-on-verifiable-rewards stage. Each stage uses progressively less but higher-quality data — pretraining might use trillions of tokens, SFT uses tens of thousands to millions of examples, and preference data can be just thousands of carefully curated comparisons."
+  },
+  {
+    "question": "what factors should you consider when selecting an LLM for production?",
+    "answer": "Key factors are task quality, latency (TTFT and TPOT), throughput, cost per token, context window size, licensing/terms of use, safety characteristics, regional data handling, fine-tuning options, structured output support, tool/function calling reliability, multi-modal capability if needed, and vendor reliability/SLA. Don't optimize on benchmarks alone — build a representative eval set from your actual user data and measure end-to-end quality, latency, and cost on it. Lock-in is a real cost: model-specific prompt patterns, fine-tunes, and tooling create switching friction even between similar APIs."
+  },
+  {
+    "question": "what is the tradeoff between model size and inference cost?",
+    "answer": "Larger models generally have higher quality but cost more per token, use more memory, and have higher latency. Smaller or distilled models can serve routine tasks more cheaply while larger models handle harder ones via routing. Rules of thumb: doubling model size roughly doubles compute and memory; quantization can reduce both 2-4× with modest quality loss; long contexts dramatically increase per-request cost (attention is quadratic, KV cache is linear). Cascade architectures (cheap model first, expensive model only when needed) and routers can offer 5-10× cost reduction without much quality loss."
+  },
+  {
+    "question": "what is the difference between an open-weight model and a fully open-source model?",
+    "answer": "An open-weight model releases the trained parameters but not necessarily training data, code, or recipes (e.g., LLaMA, Mistral). A fully open-source model releases weights plus training code, data, and documentation sufficient to reproduce the model (e.g., OLMo, Pythia). Open weights enable inference, fine-tuning, and deployment, but reproducing the model from scratch requires the additional artifacts. Licensing also varies: many 'open' models have usage restrictions (acceptable use policies, commercial-use limits, attribution requirements) that don't meet the OSI definition of open-source software."
+  },
+  {
+    "question": "what are advantages of API-hosted models over self-hosted ones?",
+    "answer": "API models require no infrastructure, scale automatically, are kept up to date, offer strong baseline quality, and typically have enterprise safety and compliance features (SOC 2, HIPAA BAAs, regional data handling). Tradeoffs include recurring cost, data egress concerns, vendor lock-in, and the inability to fine-tune most frontier models. APIs also offer rapid iteration: switching from one model version to another is a config change rather than a redeployment. For most teams, starting with an API is the right default until volume, latency, or data-locality requirements force self-hosting."
+  },
+  {
+    "question": "what are advantages of self-hosting an open-weight model?",
+    "answer": "Advantages include full control over data and privacy, predictable cost at scale (you pay for capacity, not per-token), the ability to fine-tune and customize, offline or air-gapped deployment, no per-call latency to a third-party API, and avoiding dependency on a third-party provider. The breakeven point versus API typically starts around tens of millions of tokens per day for a given model size. Hidden costs include MLOps engineering, GPU procurement and reservation, on-call burden for inference servers, model updates, and the ongoing work of keeping pace with frontier model quality."
+  },
+  {
+    "question": "what is MMLU?",
+    "answer": "MMLU (Massive Multitask Language Understanding) is a benchmark of multiple-choice questions across 57 subjects, including STEM, humanities, and law. It is widely used to compare LLMs' general knowledge and reasoning. MMLU has been heavily saturated and likely contaminated in many models' pretraining data, which has reduced its value as a discriminator at the frontier. MMLU-Pro and harder successors (GPQA Diamond, Humanity's Last Exam) have emerged for measuring frontier capability. Don't pick a model on MMLU alone — it's a generalist benchmark and may not reflect your specific use case."
+  },
+  {
+    "question": "name several popular LLM benchmarks and what they measure.",
+    "answer": "MMLU and MMLU-Pro (general knowledge), HumanEval and MBPP (basic code generation), LiveCodeBench (recent, harder code), GSM8K and MATH (math reasoning), AIME and Putnam (frontier math), HellaSwag and ARC (commonsense reasoning), TruthfulQA (truthfulness), GPQA Diamond (graduate-level science), SWE-bench and SWE-bench Verified (real GitHub issues), MMMU (multimodal), and chat-specific benchmarks like MT-Bench, AlpacaEval, and Chatbot Arena ELO. Most public benchmarks suffer from contamination, so newer or held-out versions are released regularly. Always supplement public benchmarks with private, application-specific evals."
+  },
+  {
+    "question": "what are the typical stages of an LLM evaluation pipeline?",
+    "answer": "Define objectives and metrics, curate a representative eval dataset (often from real user logs), generate model outputs, score them (automatic, LLM judge, or human), aggregate and compare against baselines, and iterate. Results feed back into prompt or model improvements. Modern eval pipelines are versioned, reproducible, parallelized, cached, and integrated into CI so prompt or model changes trigger automatic regression checks. Tools like Inspect, LangSmith, Braintrust, Promptfoo, and lm-evaluation-harness automate large parts of this; a key engineering decision is whether to build vs adopt one."
+  },
+  {
+    "question": "why is it important to have a held-out eval set?",
+    "answer": "A held-out eval set provides an unbiased estimate of performance and prevents overfitting to examples seen during development. Without it, iterative changes can silently tune to the dev set and mislead decision-making. For LLM applications, an additional concern is contamination — if your eval set has been seen in pretraining, scores are inflated. Curating eval sets from recent real user data, keeping them private, and rotating them periodically protects against both overfitting and contamination. Some teams also maintain a 'sealed' final eval set used only for major release decisions."
+  },
+  {
+    "question": "what is perplexity?",
+    "answer": "Perplexity is the exponentiated average negative log-likelihood a language model assigns to a dataset. Lower perplexity means the model predicts the data better. Perplexity is the standard pretraining objective metric and is useful for tracking training progress, comparing tokenizer-matched models, and detecting distribution shift. It does not always correlate with user-facing quality — a model can have low perplexity but produce unhelpful or unsafe outputs. Perplexities are also not comparable across different tokenizers, since vocabulary differences change the per-token entropy."
+  },
+  {
+    "question": "what is BLEU score?",
+    "answer": "BLEU measures n-gram overlap between a machine-generated text and one or more reference texts, with a brevity penalty. It was designed for machine translation and has known weaknesses on open-ended generation. BLEU correlates poorly with human judgment for tasks like summarization, dialog, or creative writing. For modern LLM evaluation, BLEU has been largely superseded by embedding-based metrics (BERTScore), LLM judges, and task-specific metrics. It remains useful as a sanity check for translation tasks and for comparing systems on the same reference set."
+  },
+  {
+    "question": "what is ROUGE score?",
+    "answer": "ROUGE is a family of recall-oriented n-gram overlap metrics primarily used for summarization. ROUGE-N measures n-gram recall and ROUGE-L uses longest common subsequence. Like BLEU, ROUGE has known weaknesses — it favors lexical overlap with references, missing valid paraphrases. Modern alternatives include BERTScore (semantic similarity via embeddings), QAGS/FactCC for faithfulness, and LLM-as-judge for overall quality. ROUGE remains widely cited because it's cheap and reproducible, but treat its absolute values with skepticism for paraphrase-rich tasks."
+  },
+  {
+    "question": "what is semantic similarity in evaluation?",
+    "answer": "Semantic similarity compares the meaning of two texts using embedding-based distance (e.g., cosine similarity of sentence embeddings), rather than lexical overlap. It captures paraphrase quality that BLEU and ROUGE miss. Common implementations include BERTScore, sentence-transformers cosine similarity, and OpenAI/Voyage embedding distances. Caveats: similarity is sensitive to the embedding model used (different models score differently), high similarity does not imply equivalent meaning (negation can flip meaning with little embedding change), and threshold calibration is task-specific. Use as a relative ranking signal rather than an absolute correctness measure."
+  },
+  {
+    "question": "what is functional correctness in evaluating code generation?",
+    "answer": "Functional correctness checks whether generated code passes a set of unit tests, regardless of textual similarity to a reference solution. The pass@k metric from HumanEval is a common formalization: probability that at least one of k samples passes all tests. Functional correctness is far more meaningful than text-overlap metrics for code, but it requires comprehensive tests (otherwise wrong code can pass) and an isolated execution environment for safety. Real-world code eval (SWE-bench) extends this idea to GitHub issues with project-level tests, which is much harder than function-level HumanEval."
+  },
+  {
+    "question": "what is cosine similarity?",
+    "answer": "Cosine similarity measures the cosine of the angle between two vectors, computed as their dot product divided by the product of their norms. It ranges from -1 to 1 and is widely used to compare embeddings. It's the de facto similarity metric for vector search because it's invariant to vector magnitude (only direction matters), making it robust to embedding-norm differences. For normalized vectors, cosine similarity is equivalent to dot product, which is faster to compute — many vector DBs require or prefer normalized embeddings for this reason."
+  },
+  {
+    "question": "what is an LLM-as-a-judge?",
+    "answer": "LLM-as-a-judge uses a strong language model to score or compare other models' outputs against criteria or a reference. It is faster and cheaper than human evaluation but can be biased (e.g., toward verbosity or its own style). Best practices include providing a clear rubric, using pairwise comparison rather than absolute scoring, randomizing position, asking for reasoning before the judgment, and validating against human labels on a calibration set. LLM judges work best when the criteria are well-defined (factuality with a reference, code correctness, schema conformance) and weakest on highly subjective qualities."
+  },
+  {
+    "question": "when should you use human evaluation instead of automated metrics?",
+    "answer": "Human evaluation is valuable for subjective qualities (helpfulness, tone, safety), high-stakes decisions, calibrating automated judges, and open-ended tasks where reference-based metrics are weak. It is slow and expensive, so it is often reserved for key milestones, ablations, and red-teaming. Best practices: use clear rubrics, multiple raters per item with agreement metrics (Cohen's kappa), pairwise comparisons for sensitivity, and platforms like SurgeAI, Scale, or internal teams. Human evals also drift over time as raters get tired or guidelines evolve, so periodic recalibration is important."
+  },
+  {
+    "question": "what are common biases of LLM judges?",
+    "answer": "Position bias (preferring the first or last answer), verbosity bias (preferring longer answers), self-preference bias (favoring its own style), authority bias (favoring formal-sounding responses), and difficulty calibrating across tasks. Mitigations include position randomization, length-normalized rubrics, using a different model family as judge than the one being evaluated, pairwise comparisons rather than absolute scores, and chain-of-thought judgments where the model reasons before scoring. Always validate judge outputs against human labels on a held-out set before trusting them at scale."
+  },
+  {
+    "question": "what is hallucination in LLMs?",
+    "answer": "A hallucination is a model output that is fluent but factually incorrect, unsupported, or fabricated. Hallucinations are a primary failure mode of LLMs, especially in open-ended generation and retrieval-grounded answering. They arise from the model's training objective (predict the most likely next token, not the most truthful one), from gaps in training data, and from over-extrapolation. Mitigations include retrieval augmentation, structured output with citations, chain-of-thought verification, training with factuality preferences, and post-hoc fact-checking with NLI models or LLM judges."
+  },
+  {
+    "question": "how can hallucinations be measured?",
+    "answer": "Methods include faithfulness scoring against source documents (for RAG), fact-checking against knowledge bases, natural language inference between output and references, and LLM-judge scoring with citations. Human review remains the gold standard. Specific frameworks include RAGAS (faithfulness, answer relevance, context relevance), TruLens, and DeepEval. For open-domain hallucinations without a fixed reference, FActScore decomposes responses into atomic facts and checks each. Critically, hallucination rate depends heavily on prompt, task, and dataset — a single number is rarely meaningful without these dimensions."
+  },
+  {
+    "question": "how do you measure toxicity in LLM outputs?",
+    "answer": "Use classifiers trained on labeled toxicity data (e.g., Perspective API, Detoxify, or fine-tuned classifiers), red-teaming with adversarial prompts, and benchmarks like RealToxicityPrompts. Results should be stratified by demographic subgroups, since toxicity classifiers themselves have known biases (e.g., flagging African American English at higher rates). Also evaluate under jailbreak scenarios — toxicity in normal use is one thing, toxicity under adversarial prompting is another. Combine automated classifiers with periodic human review since toxicity is contextual and classifiers miss subtler harms."
+  },
+  {
+    "question": "how do you measure bias in language models?",
+    "answer": "Use benchmarks like BBQ, StereoSet, or CrowS-Pairs that probe stereotypical associations, measure performance disparities across demographic groups, and run counterfactual prompts with swapped identity terms. No single metric captures all bias. Different bias frameworks measure different things: some test associations (does the model link 'doctor' with male pronouns?), some test performance gaps (does sentiment classification accuracy differ across dialects?), and some test generation outcomes (do generated stories portray different groups differently?). Bias measurement is contested both technically and politically — be explicit about which definition you're using."
+  },
+  {
+    "question": "what is a vector database?",
+    "answer": "A vector database stores high-dimensional embeddings and supports fast similarity search, typically via approximate nearest neighbor (ANN) indexes. It is a core component of retrieval-augmented generation systems. Beyond pure similarity, modern vector DBs support metadata filtering, hybrid (lexical+vector) search, multi-tenancy, namespaces, and incremental updates. Choosing one involves tradeoffs across query latency, recall at high ANN speed, indexing time, max collection size, hosting model (managed vs self-hosted), and cost. For small workloads, a vector extension on Postgres (pgvector) or DuckDB is often sufficient and avoids adding new infrastructure."
+  },
+  {
+    "question": "name several popular vector databases or libraries.",
+    "answer": "Examples include Pinecone, Weaviate, Milvus, Qdrant, Chroma, pgvector (Postgres extension), Elasticsearch/OpenSearch with k-NN, Vespa, Turbopuffer, and FAISS (a library, not a managed DB). Each makes different tradeoffs: Pinecone is fully managed and developer-friendly; Qdrant and Weaviate offer rich filtering; Milvus scales to billions of vectors; pgvector unifies vectors and structured data in one DB; FAISS is the original research library and underlies many systems. For most production RAG, hybrid search support and metadata filtering matter as much as raw ANN performance."
+  },
+  {
+    "question": "what is approximate nearest neighbor (ANN) search?",
+    "answer": "ANN algorithms return likely-nearest vectors much faster than exact search by trading a small amount of recall for speed. They are essential for searching millions or billions of embeddings in real time. Major ANN families include graph-based (HNSW), tree-based (Annoy), partition-based (IVF), and quantization-based (PQ, OPQ). Production systems often combine these (e.g., IVF+PQ in FAISS, HNSW+SQ in many DBs). The key tuning knobs are recall@k (fraction of true nearest neighbors retrieved), QPS (queries per second), and index build time/memory; you typically have to give up some on each axis."
+  },
+  {
+    "question": "what is HNSW?",
+    "answer": "Hierarchical Navigable Small World (HNSW) is a graph-based ANN algorithm that builds a multi-layer proximity graph and performs greedy search from coarse to fine layers. It offers high recall at low latency and is a popular default in vector DBs. HNSW indexes are typically held in memory and can grow large (often 1.5-2× the raw vector size), and they support efficient inserts but expensive deletes. Key tuning parameters are M (graph connectivity), efConstruction (build-time search depth), and ef (query-time search depth) — increasing each improves recall at the cost of memory or latency."
+  },
+  {
+    "question": "what is chunking in RAG?",
+    "answer": "Chunking splits source documents into smaller passages that can be embedded and retrieved individually. Good chunking balances context completeness against retrieval precision and embedding context-window limits. Chunks should be small enough that the embedding meaningfully reflects their content (most embedding models work best on 100-500 tokens), but large enough to be self-contained when retrieved. Chunking is often the highest-leverage knob in a RAG system — bad chunks (split mid-sentence, mixed topics, missing context) cause cascading retrieval failures regardless of how good the rest of the pipeline is."
+  },
+  {
+    "question": "what are common document chunking strategies?",
+    "answer": "Fixed-size chunks by tokens/characters with overlap (simple, language-agnostic), recursive splitting by structural boundaries (paragraphs, sections, sentences), semantic chunking based on topic shifts (using embedding distance between sentences), and document-structure-aware chunking (Markdown headings, code units, table rows). Hybrid strategies are common: structure-aware splits with size limits and overlap. For long technical docs, hierarchical chunking with parent-child relationships (small chunks for retrieval, larger parents for context expansion) is particularly effective. Always evaluate chunking choices against your retrieval eval set, not in isolation."
+  },
+  {
+    "question": "what is an embedding?",
+    "answer": "An embedding is a dense vector representation of an item (word, sentence, document, image) where semantic similarity corresponds to geometric proximity. Embeddings enable similarity search, clustering, and downstream classification. Modern text embeddings are typically produced by transformer encoders fine-tuned with contrastive objectives on (query, document) pairs. Embedding quality depends on training data and target tasks — an embedding optimized for symmetric similarity (sentence-pair) behaves differently from one optimized for asymmetric retrieval (query-document). Embeddings are also language- and domain-specific; coverage of your data's distribution matters more than benchmark scores."
+  },
+  {
+    "question": "name a few popular text embedding models.",
+    "answer": "OpenAI text-embedding-3-small/large, Cohere Embed, Voyage AI embeddings, Google Gemini embeddings, and open models like BGE, E5, GTE, Nomic Embed, and sentence-transformers variants. The MTEB leaderboard tracks performance across many tasks. Closed-API embeddings offer convenience and often top-tier quality; open models offer privacy, no per-call cost, and customization. Dimension size varies (256-3072+ is common), and many APIs now support truncated embeddings (Matryoshka) where you can use a shorter prefix of the vector at lower quality. Match your embedding model's strengths (multilingual, code, long-context) to your data."
+  },
+  {
+    "question": "what is BM25?",
+    "answer": "BM25 is a term-based (lexical) retrieval ranking function that scores documents by term frequency, inverse document frequency, and length normalization. It is a strong, non-neural baseline that remains competitive, especially for keyword-heavy queries. BM25 has two tuning parameters (k1 and b) that control term frequency saturation and length normalization respectively. It's the default scorer in Elasticsearch and Lucene and powers a huge amount of production search. For a new RAG system, always include BM25 as a baseline — it's cheap, requires no training, and often retrieves things dense embeddings miss (rare terms, identifiers, exact phrases)."
+  },
+  {
+    "question": "what is hybrid search?",
+    "answer": "Hybrid search combines lexical retrieval (e.g., BM25) with dense embedding retrieval and fuses the results, often via reciprocal rank fusion (RRF) or learned weighting. It captures both exact-term matches and semantic similarity. RRF is popular because it's simple and parameter-free: each retriever ranks documents, and the fused score is the sum of 1/(k + rank). Modern vector DBs increasingly offer hybrid search out of the box (Weaviate, Qdrant, OpenSearch, Vespa). The quality gain over either alone is consistently meaningful, especially when queries vary in style or contain rare terms."
+  },
+  {
+    "question": "what is reranking in retrieval pipelines?",
+    "answer": "Reranking applies a more powerful but slower model (often a cross-encoder) to re-score a small set of candidates returned by a fast first-stage retriever. This improves top-k quality without the cost of running the reranker on the full corpus. Common rerankers include Cohere Rerank, Voyage Rerank, BGE rerankers, and cross-encoder-MS-MARCO models. Typical pipeline: retrieve top 100-200 with embeddings or BM25, rerank to top 5-20 for the LLM. The quality gain is often dramatic — reranking is one of the highest-ROI additions to a basic RAG pipeline, second only to good chunking."
+  },
+  {
+    "question": "what is HyDE (Hypothetical Document Embeddings)?",
+    "answer": "HyDE asks an LLM to generate a hypothetical answer to the user's query, embeds that answer, and uses it as the query vector for retrieval. The reasoning is that the hypothetical answer's embedding is closer in space to real relevant documents than the short query is. It can improve recall when queries are short or underspecified, especially for question-answering corpora. Tradeoffs are extra latency (an LLM call before retrieval) and risk of hallucinated keywords misleading retrieval. For most production systems, query rewriting and reranking provide more robust gains."
+  },
+  {
+    "question": "what is Parameter-Efficient Fine-Tuning (PEFT)?",
+    "answer": "PEFT is a family of techniques that adapt pretrained models by training only a small subset of parameters or small added modules, keeping the bulk of the base model frozen. This dramatically reduces compute, memory, and storage for fine-tuning. PEFT methods include LoRA, QLoRA, prefix tuning, prompt tuning, IA³, and adapters. Beyond efficiency, PEFT also reduces catastrophic forgetting (since base weights don't move) and produces small artifacts (often <1% of base model size) that can be served, swapped, or composed. It's the default choice for most fine-tuning workflows today."
+  },
+  {
+    "question": "why is PEFT useful compared to full fine-tuning?",
+    "answer": "PEFT requires far less GPU memory and compute, produces small adapter files that are cheap to store and swap, and reduces the risk of catastrophic forgetting. It makes fine-tuning large models feasible on modest hardware — QLoRA can fine-tune a 70B model on a single 80GB A100. Multiple LoRA adapters can be served from one base model with adapter switching, enabling cheap multi-tenancy. Full fine-tuning may still win on tasks requiring substantial behavior change or when peak quality is critical, but PEFT is the right starting point and often closes most of the gap."
+  },
+  {
+    "question": "what is LoRA?",
+    "answer": "Low-Rank Adaptation (LoRA) freezes a pretrained model's weights and injects small trainable low-rank matrices (A and B) into selected layers, typically attention projections. The update is W + B*A where A and B have rank r << d. Only these matrices are trained, yielding 100-1000× parameter savings. At inference, LoRA matrices can be merged into the base weights for zero added latency, or kept separate for adapter swapping. LoRA is now the default fine-tuning method for most use cases; common targets are q_proj/v_proj (or all attention projections) and sometimes MLP layers. Hugging Face PEFT and Unsloth are popular implementations."
+  },
+  {
+    "question": "what does the rank (r) in LoRA control?",
+    "answer": "The rank r controls the dimensionality of the low-rank update A*B and thus the adapter's capacity. Higher r increases expressivity but uses more parameters and memory; common values are 4-64 depending on the task. Higher r is not always better — too-high rank can overfit on small datasets and erode the regularization benefit of low-rank updates. A common starting heuristic is r=8 or r=16, with the LoRA alpha hyperparameter (which scales the update) typically set to r or 2r. For complex tasks like new domain adaptation, r=64-128 sometimes helps; for simple tasks, r=4-8 suffices."
+  },
+  {
+    "question": "what is QLoRA?",
+    "answer": "QLoRA fine-tunes with LoRA on top of a base model quantized to 4-bit (using NF4, a normal-float-4 format) precision. It allows fine-tuning very large models on a single consumer GPU with minimal quality loss — the original QLoRA paper showed 65B model fine-tuning on a 48GB GPU. Innovations include double quantization (quantizing the quantization constants), paged optimizers (CPU offloading), and the NF4 data type. QLoRA is implemented in bitsandbytes + Hugging Face PEFT and has democratized large-model fine-tuning for hobbyists and small teams."
+  },
+  {
+    "question": "what is knowledge distillation?",
+    "answer": "Knowledge distillation trains a smaller 'student' model to reproduce the outputs (typically probability distributions, called 'soft labels') of a larger 'teacher' model. The goal is to compress the teacher's capabilities into a cheaper, faster model. Distillation can use logit matching (KL divergence on output distributions), feature matching (intermediate-layer alignment), or behavioral cloning (training on teacher-generated outputs). For LLMs, the dominant practical form is generating large datasets of teacher outputs and training a smaller model with SFT — this is how many efficient assistants (Phi, Gemma, Mistral instruct variants) are built. Beware: many open distilled models silently violate teacher API terms of use."
+  },
+  {
+    "question": "what is model merging?",
+    "answer": "Model merging combines two or more fine-tuned models' weights (often sharing the same base) into a single model without additional training. Techniques include linear averaging, SLERP (spherical linear interpolation), TIES-merging (which resolves conflicting parameter updates), and DARE (which sparsifies updates before merging). Merging is appealing because it's cheap (no GPU training needed, just weight arithmetic) and can combine specialized fine-tunes into a generalist. It works best when the source models share a base and have non-conflicting fine-tunes. Tools like mergekit have made it accessible, and merged models frequently appear at the top of open leaderboards."
+  },
+  {
+    "question": "what is multi-task fine-tuning?",
+    "answer": "Multi-task fine-tuning trains a single model on data from several tasks simultaneously, using task-identifying prompts or heads. It can improve generalization through positive transfer and produces one model that handles many tasks, at the cost of potential negative transfer where tasks interfere. Data mixture is the key knob — bad task balancing causes the model to over-specialize on the dominant task. Modern instruction-tuned LLMs are essentially the result of massive multi-task fine-tuning across thousands of task types. For application-specific multi-task setups, holdout evaluation per task is essential to detect interference."
+  },
+  {
+    "question": "what are common components of an effective prompt?",
+    "answer": "Clear instructions, relevant context, examples (few-shot), desired output format (often with a JSON schema), explicit constraints, and sometimes a role or system prompt. Well-structured prompts reduce ambiguity and improve reliability. Additional patterns: stating what NOT to do (negative constraints), placing key instructions near the end (recency effect), using delimiters (XML tags, markdown) to separate prompt sections, and asking the model to think step-by-step before answering. For production, version your prompts, test them on a representative eval set, and monitor for drift when models update."
+  },
+  {
+    "question": "what is few-shot prompting?",
+    "answer": "Few-shot prompting provides several input-output examples in the prompt so the model can infer the desired pattern before solving the real query. It often improves quality on tasks where zero-shot is insufficient. Best practices: use diverse examples covering edge cases, use examples representative of real inputs, place them in a consistent format the model can pattern-match, and order matters (recent examples often have more influence). For very capable models, few-shot returns are diminishing — well-written instructions often suffice. Be careful with examples that might leak into the response (the model may copy them verbatim)."
+  },
+  {
+    "question": "what is chain-of-thought prompting?",
+    "answer": "Chain-of-thought (CoT) prompting asks the model to produce intermediate reasoning steps before the final answer, typically by adding 'Let's think step by step' or showing reasoning examples. It improves performance on multi-step tasks like math, logic, and planning, especially for larger models. Variants include zero-shot CoT (just the trigger phrase), few-shot CoT (worked-example demonstrations), and tree-of-thought (explore multiple reasoning paths). For frontier 'reasoning' models that have been RL-trained on long deliberation, the model may produce CoT internally and you should prompt for the final answer rather than ask for explicit steps."
+  },
+  {
+    "question": "what is in-context learning?",
+    "answer": "In-context learning is the ability of a pretrained LLM to learn a task from examples provided in the prompt, without updating any weights. It enables adaptation to new tasks purely at inference time. ICL emerges as a property of large pretrained models — the mechanism is still an active research area, with theories ranging from implicit gradient descent to associative pattern matching. Practically, ICL gives you fast iteration (no training loop) but is limited by context window, costs more per inference (longer prompts), and is less reliable than fine-tuning for production-critical behaviors that need to be invariant."
+  },
+  {
+    "question": "what is a system prompt?",
+    "answer": "A system prompt is a high-priority instruction prepended to a conversation that defines the model's role, constraints, tone, and behavior. It is typically treated as more authoritative than user messages, though this is enforced by training rather than guaranteed by architecture. System prompts are where you encode persona, format requirements, safety policies, and tool definitions. For long sessions, system prompts are an ideal candidate for prompt caching — providers charge less for repeated system content. Note: system prompts are not inherently secure against prompt injection; layered defenses are still required."
+  },
+  {
+    "question": "what is prompt injection?",
+    "answer": "Prompt injection is an attack where adversarial instructions, placed in user input or retrieved content, cause the LLM to ignore developer instructions or produce unintended behavior. It is the LLM analog of classic injection attacks. Direct injection comes from the user; indirect injection comes via tool outputs, retrieved documents, web pages, emails, or any content the LLM ingests. There is no 'patch' for prompt injection — the model fundamentally treats text as instructions. Defenses are layered: input/output classifiers, isolation of untrusted content, restricted tool scopes, human confirmation for sensitive actions, and monitoring."
+  },
+  {
+    "question": "what is indirect prompt injection?",
+    "answer": "Indirect prompt injection delivers malicious instructions via third-party content the LLM ingests (web pages, emails, documents), rather than via direct user input. It is particularly dangerous for agents that browse, retrieve, or read attachments because the attacker controls content the model sees as data. Real-world examples include malicious instructions hidden in white text or metadata of web pages, comments in HTML/PDFs, and adversarial documents in shared drives. Defenses include treating retrieved content as untrusted, structurally isolating it in prompts, limiting tool capabilities, and requiring human confirmation before any irreversible action."
+  },
+  {
+    "question": "how can system prompts be made more resistant to injection?",
+    "answer": "Use strong delimiters (XML tags, distinctive markers) around user content, repeat key instructions, explicitly tell the model to ignore instructions in untrusted inputs, enforce output schemas (so any deviation is detectable), validate tool inputs, and apply separate input/output guardrails (classifier-based and rule-based). Maintain the principle of least privilege for tools the model can call. No prompt alone is fully secure — defense in depth is essential. Tools like prompt-shield models and dedicated injection classifiers (Lakera, NeMo Guardrails) layer additional protection."
+  },
+  {
+    "question": "what is a prompt registry?",
+    "answer": "A prompt registry is a versioned store of prompt templates with metadata (models, params, evaluation results, owners). It enables auditing, rollback, A/B testing, and reproducibility across environments. Prompts are code — they should be version-controlled like code, with changes reviewed via PRs, eval results attached, and deployment gated by tests. Tools like LangSmith, Braintrust, Helicone, PromptLayer, and bespoke internal tools provide registry features. At minimum, store prompts as files in your repo with explicit version IDs that are referenced in production traffic, so any output can be traced back to the exact prompt that produced it."
+  },
+  {
+    "question": "why should teams version and track prompts in production?",
+    "answer": "Prompts are code: small changes can meaningfully affect quality, cost, and safety. Versioning enables reliable rollbacks, regression testing, A/B comparisons, and tying observed behavior to specific prompt versions. Without versioning, debugging is nearly impossible — you can't tell whether a quality regression came from a prompt change, a model change, or a data change. Track prompts the same way you track code: in version control, with CI-run evals, with deployment promotion (dev/staging/prod), and with structured logging that records which prompt version handled each request."
+  },
+  {
+    "question": "what is tool use (function calling) in LLMs?",
+    "answer": "Tool use allows an LLM to invoke external functions or APIs by emitting structured calls (name + arguments) that the host application executes. Results are returned to the model, enabling up-to-date data, actions, and precise computation that the model can't do reliably itself (e.g., arithmetic, database queries, web actions). Tool use is the foundation of agents and increasingly of routine LLM applications. Reliable tool use depends on clear tool descriptions, well-typed argument schemas, idempotent tool implementations, and robust handling of malformed model outputs."
+  },
+  {
+    "question": "how does function calling typically work in an LLM API?",
+    "answer": "The developer provides tool schemas (name, description, JSON-schema args). The model decides when to call a tool, emits arguments in a structured format, the application runs the tool, and the result is fed back for the model's next turn. Modern APIs (Anthropic, OpenAI, Google) handle the parsing automatically and return structured tool_use blocks. Best practices: write clear, action-verb tool descriptions; use Pydantic or JSON Schema for arg validation; handle tool failures gracefully; prefer many narrow tools over few overloaded ones; and limit total tools per call (model accuracy degrades with too many)."
+  },
+  {
+    "question": "what is the ReAct pattern?",
+    "answer": "ReAct (Reasoning + Acting) interleaves the model's reasoning (Thought) with tool calls (Action) and observations in a loop: Thought → Action → Observation → Thought → ... It improves the reliability of agents on multi-step tasks by making the decision process explicit and giving the model a chance to course-correct on each observation. The original ReAct paper preceded native tool calling and used prompt formats; modern implementations use function-calling APIs but the loop structure is the same. ReAct is a baseline pattern — many production agents use variants with planning, reflection, or hierarchical control on top."
+  },
+  {
+    "question": "what is self-reflection in agents?",
+    "answer": "Self-reflection is when an agent critiques its own previous output or plan and revises it before finalizing. Patterns like Reflexion store reflection traces in memory to improve over trials. Reflection works best when there's an external signal (test pass/fail, tool error, user feedback) the agent can react to; without it, reflection often becomes circular. Critic-style architectures (separate critic model evaluates the actor) are a structural alternative. For high-stakes tasks, external verification (running unit tests, querying ground-truth sources) is more reliable than self-reflection alone."
+  },
+  {
+    "question": "what is memory in an AI agent?",
+    "answer": "Memory is the mechanism by which an agent retains information across turns or sessions. It may be short-term (within the current context window) or long-term (external storage such as a vector DB or database). Memory design choices include what to remember (raw turns, summaries, extracted facts), when to retrieve (every turn, on demand), how to consolidate (periodic summarization), and how to forget (TTL, relevance decay). Poorly designed memory causes context-window bloat, latency growth, and contamination across sessions. Frameworks like Mem0, LangGraph Memory, and Letta (formerly MemGPT) implement common patterns."
+  },
+  {
+    "question": "what is the difference between short-term and long-term memory in agents?",
+    "answer": "Short-term memory holds the current conversation and scratchpad in the model's context window — it's bounded by context size and lost when the session ends. Long-term memory persists across sessions in external stores (vector DBs, key-value stores, structured DBs), and relevant entries are retrieved into context as needed. Long-term memory needs explicit schema design (what kinds of facts, scoped to whom, with what TTL) and retrieval logic. Mixing user data across sessions is also a privacy concern — long-term memory must scope by user/account and respect data deletion requests."
+  },
+  {
+    "question": "what are guardrails in an AI system?",
+    "answer": "Guardrails are policies and checks that constrain model inputs, outputs, and actions to prevent unsafe or off-policy behavior. They may include classifiers, regex filters, schema validators, allow/deny lists, and human-in-the-loop confirmations. Good guardrail systems are layered (input + output + action), measurable (tracked precision/recall on a test set), and tunable (different policies for different user tiers or contexts). Frameworks like NeMo Guardrails, Guardrails AI, Lakera, and built-in classifiers from model providers offer common building blocks. The hardest problem is usually false-positive rate — overly aggressive guardrails harm helpfulness."
+  },
+  {
+    "question": "how does the principle of least privilege apply to agents?",
+    "answer": "Give agents only the minimum tools, permissions, data access, and blast radius needed for their task. This limits damage from bugs, prompt injection, or misuse. Practical applications: read-only DB access by default, write access only when essential, scoped API keys per agent, sandboxed code execution, network egress restrictions, per-user tenant isolation, and dry-run modes for destructive operations. The principle is especially important for agents that can execute code, send communications, or move money — these should require explicit human confirmation for any irreversible action."
+  },
+  {
+    "question": "how do you evaluate an AI agent?",
+    "answer": "Use a mix of end-to-end task success rate on curated scenarios, step-level (trajectory) evaluation of tool calls and intermediate reasoning, cost and latency metrics per task, and safety/robustness tests. LLM-judge and human reviews complement automatic scoring. Agent eval is significantly harder than LLM eval because you're evaluating a sequential decision process — the same final answer can come from good or bad trajectories, and small early errors compound. Public benchmarks (SWE-bench, WebArena, OSWorld, AgentBench, GAIA) measure specific capabilities; you almost certainly need a private application-specific eval too."
+  },
+  {
+    "question": "what is trajectory evaluation for agents?",
+    "answer": "Trajectory evaluation scores not just the final answer but the sequence of actions, tool calls, and reasoning steps an agent took. It helps diagnose failures like wrong tool choice, bad arguments, unnecessary steps, or oscillation between actions. Trajectories can be compared against reference trajectories (golden paths), scored with rubrics, or judged by an LLM. Tools like LangSmith, Langfuse, and Arize Phoenix visualize trajectories and support tagging, filtering, and regression detection. Trajectory analysis is essential for agent debugging because a single number (success rate) hides many distinct failure modes."
+  },
+  {
+    "question": "what is a multi-agent system?",
+    "answer": "A multi-agent system uses several specialized agents that collaborate, often through a shared protocol or an orchestrator. Specialization can improve quality on complex tasks but adds coordination, cost, and debugging complexity. Common patterns: orchestrator-worker (one decomposes, others execute), debate (multiple agents argue, a judge decides), critic (one acts, another evaluates), and hierarchical (manager-supervisor-worker). Multi-agent systems have proliferated but also have a track record of being more complex than necessary — a single well-prompted agent often matches multi-agent performance, so adopt this pattern only when measured benefits justify the overhead."
+  },
+  {
+    "question": "what is the orchestrator-worker pattern?",
+    "answer": "An orchestrator agent decomposes a task and delegates subtasks to worker agents (often specialized by capability or tool access), then synthesizes their results. It centralizes control and enables specialization, but the orchestrator becomes a bottleneck and single point of failure. Common in research-style agents (Anthropic's research agents, OpenAI's swarm). Tradeoffs: better task decomposition vs. higher latency (sequential dependencies), specialization vs. context fragmentation, parallelism vs. coordination overhead. Provide workers with sufficient context and clear interfaces to avoid the orchestrator becoming an ad-hoc message-passing layer."
+  },
+  {
+    "question": "what is MCP (Model Context Protocol)?",
+    "answer": "MCP is an open protocol, introduced by Anthropic in late 2024, that standardizes how applications expose tools, resources, and prompts to LLMs. It lets any MCP-compatible client connect to any MCP server without custom integration code, similar to how the Language Server Protocol (LSP) standardized editor-language interactions. MCP has been adopted broadly across major LLM providers, IDEs, and tooling. It uses JSON-RPC over stdio or HTTP and includes capability negotiation, authentication, and structured error handling. The ecosystem of MCP servers (databases, file systems, SaaS tools, cloud platforms) is growing rapidly."
+  },
+  {
+    "question": "what are common data acquisition strategies for training ML models?",
+    "answer": "Scraping public web data (with respect for robots.txt and ToS), licensing commercial datasets, using open datasets (Common Crawl, Wikipedia, Hugging Face Hub), collecting in-product logs with consent, crowdsourced annotation (Mechanical Turk, Surge, Scale), synthetic data generation, partnerships for proprietary data, and government/academic open data. Each comes with legal, ethical, and quality considerations: web scraping has copyright and ToS risks, crowdsourced data has annotation quality risks, synthetic data has distribution-mimicry risks. For modern LLM applications, real user logs (with proper consent and anonymization) are typically the highest-value data source."
+  },
+  {
+    "question": "what is synthetic data in ML?",
+    "answer": "Synthetic data is artificially generated data (by simulation, rules, or other models like LLMs) used to train or evaluate models. It is useful when real data is scarce, expensive, sensitive, or biased, but can introduce its own artifacts. LLM-generated synthetic data has become dominant in post-training: instruction-response pairs, preference comparisons, reasoning traces, and tool-use trajectories are routinely generated by strong models to train smaller ones. Risks include distribution narrowing (the synthetic data reflects the generator's biases), 'model collapse' over generations, and copyright/license issues from the generator. Synthetic data is most reliable when grounded in real seeds or verified by a deterministic check."
+  },
+  {
+    "question": "what are important dimensions of data quality?",
+    "answer": "Common dimensions include accuracy (matches reality), completeness (no missing values or coverage gaps), consistency (no contradictions), timeliness (sufficiently recent), uniqueness (no duplicates), validity (matches schema/constraints), and representativeness (matches the production distribution). Labels additionally need clarity, inter-annotator agreement, and freedom from systematic bias. For LLM training data, additional concerns include language balance, domain coverage, toxicity rates, PII presence, and copyrighted content. Data quality assessment should be automated where possible (schema validation, statistical drift detection) and supplemented with periodic human audits."
+  },
+  {
+    "question": "why is data deduplication important for LLM training data?",
+    "answer": "Duplicates waste compute, amplify memorization (and thus privacy and copyright risk), skew evaluation if they leak across train/test, and can overfit to specific sources. Fuzzy deduplication (MinHash, SimHash, embedding-based clustering) is commonly used at scale because exact deduplication misses near-duplicates (boilerplate, mirror sites, paraphrases). Research has shown that deduplication can substantially improve sample efficiency — models trained on deduplicated data reach the same quality with less data. Deduplication is especially critical for evaluation: any overlap between training and eval invalidates the eval scores."
+  },
+  {
+    "question": "what is ETL?",
+    "answer": "ETL stands for Extract, Transform, Load: extract data from sources, transform it (clean, normalize, enrich), and load it into a target system like a data warehouse. ELT reverses the last two steps, loading raw data first then transforming in place using the warehouse's compute. ETL/ELT pipelines feed feature stores, training datasets, and analytics. Modern data tooling (dbt, Airflow, Dagster, Prefect) standardizes orchestration. For ML, an additional consideration is feature parity between training and serving — feature pipelines must produce identical results in batch (training) and real-time (serving) contexts to avoid training-serving skew."
+  },
+  {
+    "question": "what is data normalization?",
+    "answer": "In ML preprocessing, normalization scales features to a common range or distribution (min-max to [0,1] or z-score to mean-0/std-1) so they contribute comparably and training is more stable. In databases, normalization means structuring tables to reduce redundancy (1NF, 2NF, 3NF). For neural networks, input normalization is essential — unnormalized features can cause vanishing/exploding gradients, slow convergence, and poor generalization. The same statistics (mean, std) computed on training data must be applied at inference, which is a common source of bugs. For text/embeddings, L2 normalization is common before computing cosine similarity."
+  },
+  {
+    "question": "why are clear annotation guidelines important?",
+    "answer": "They reduce label noise and inter-annotator disagreement, improve downstream model quality, and make the labeling process auditable and reproducible. Good guidelines include definitions, decision rules, worked examples (positive and negative), edge cases, and a process for resolving ambiguity. Iterate on guidelines based on disagreement analysis — high disagreement usually signals ambiguous guidelines, not lazy annotators. For LLM evaluation rubrics specifically, the same care applies: rubric ambiguity directly translates to noisy LLM-judge scores. Periodic guideline reviews and annotator calibration sessions are best practice for any sustained labeling effort."
+  },
+  {
+    "question": "what is inter-annotator agreement and how is it measured?",
+    "answer": "Inter-annotator agreement measures consistency between annotators on the same items. Common metrics are Cohen's kappa (two annotators, categorical), Fleiss' kappa (multiple annotators), Krippendorff's alpha (general-purpose, handles missing data and various measurement levels), and percent agreement (simplest but doesn't account for chance). Low agreement signals ambiguous guidelines, an ill-defined task, or insufficient training. Kappa values above 0.6 are typically considered substantial; above 0.8 nearly perfect. For subjective tasks (creativity, helpfulness), perfect agreement is unrealistic — focus on improving the trend over time and on resolving systematic disagreements."
+  },
+  {
+    "question": "what is data augmentation?",
+    "answer": "Data augmentation creates new training examples by applying label-preserving transformations to existing data, such as cropping, flipping, or color-jittering images, or paraphrasing, back-translating, or word-dropout for text. It improves generalization and is especially valuable with small datasets. For text, modern LLM-driven augmentation (paraphrasing with a strong LLM, generating new examples conditioned on existing ones) often outperforms classical techniques. The key constraint is that transformations must preserve labels — augmented examples that no longer have the original meaning add noise, not signal."
+  },
+  {
+    "question": "how is synthetic data used in LLM post-training?",
+    "answer": "Strong models are used to generate instruction/response pairs (Self-Instruct, Evol-Instruct), preference comparisons, reasoning traces (rejection-sampled correct CoT), tool-use trajectories, and task-specific dialogues that train smaller or more specialized models. This is how many efficient instruction-tuned models are built. The pattern is: seed with a small high-quality set, expand with a generator LLM, filter aggressively (deduplication, quality scoring, format validation), and train. Quality of the seed and filter is more important than quantity of generation. Beware: synthetic data can amplify the generator's biases and limitations; ground in real signal where possible."
+  },
+  {
+    "question": "what is the difference between compute-bound and memory-bound workloads?",
+    "answer": "A compute-bound workload is limited by the processor's arithmetic throughput (FLOPs). A memory-bound workload is limited by memory bandwidth and data movement, not by math. The roofline model formalizes this tradeoff with arithmetic intensity (FLOPs per byte loaded). Understanding which regime you're in determines optimization priorities: compute-bound workloads benefit from lower precision (FP16, INT8) and tensor cores; memory-bound workloads benefit from quantization to reduce data movement, fused kernels, and better memory layouts. Most LLM training is compute-bound (large batches, parallel forward passes), while most LLM decode is memory-bound."
+  },
+  {
+    "question": "why is LLM inference often memory-bound?",
+    "answer": "During autoregressive decoding with small batches, each token requires reading the full model weights (and growing KV cache) from GPU memory to do relatively little compute per byte. This makes memory bandwidth, not FLOPs, the bottleneck. Practical implications: (1) bigger batch sizes amortize the weight read across more requests, dramatically improving throughput; (2) quantization (INT8, INT4) directly speeds up decode by reducing bytes-per-weight; (3) speculative decoding works by getting more 'compute' done per memory pass; (4) GPUs with higher memory bandwidth (H100 vs A100) outperform on decode disproportionately to their FLOP ratio."
+  },
+  {
+    "question": "what is Time To First Token (TTFT)?",
+    "answer": "TTFT is the latency from sending a request to receiving the first generated token. It is dominated by the prefill stage (processing the input prompt) and is critical for user-perceived responsiveness in streaming interfaces. TTFT scales roughly linearly with prompt length (prefill is parallel but quadratic-time in attention) and is also affected by queue wait time, cold starts, and tokenization. Prompt caching dramatically reduces TTFT for repeated prefixes. For chat UX, TTFT below ~1 second feels responsive; above 3 seconds users abandon. For agent workflows, TTFT compounds across many steps."
+  },
+  {
+    "question": "what is Time Per Output Token (TPOT)?",
+    "answer": "TPOT (also called inter-token latency or ITL) is the average time between successive generated tokens during decoding. It determines the tokens-per-second throughput a user sees after the first token. TPOT is governed by memory bandwidth (decode is memory-bound), model size, KV cache size (longer contexts slow decode), and batch dynamics in continuous batching. Quantization, speculative decoding, GQA/MQA, and smaller models reduce TPOT. For streamed output to feel fluid, TPOT below ~50ms (≥20 tok/s) is typical; ≥80 tok/s feels instant. Reasoning models with long CoT make TPOT especially salient since users wait through many internal tokens."
+  },
+  {
+    "question": "how do TTFT and TPOT differ in what they measure?",
+    "answer": "TTFT captures prompt-processing (prefill) latency, which scales with input length. TPOT captures decoding latency per token, which scales with model size, KV-cache size, and batch conditions. Both matter for end-to-end latency, but their optimizations differ: TTFT improves with prompt caching, smaller prompts, and faster prefill kernels; TPOT improves with quantization, speculative decoding, smaller models, and continuous batching. Total latency = TTFT + (output_tokens × TPOT). For short responses, TTFT dominates; for long generations (reasoning, code), TPOT dominates."
+  },
+  {
+    "question": "what is quantization?",
+    "answer": "Quantization reduces the numerical precision of model weights and/or activations (e.g., from FP16 to INT8 or INT4). It shrinks memory and often speeds up inference on supported hardware, at some accuracy cost. Variants include weight-only quantization (e.g., GPTQ, AWQ), weight-activation quantization (SmoothQuant), and KV cache quantization. Calibration data and per-channel/per-group scales help preserve accuracy. INT4 is the modern sweet spot for serving: 4× memory reduction over FP16 with often <1 point quality loss on benchmarks. For latency-critical applications, FP8 on H100 or NVIDIA L40S delivers similar gains with higher fidelity."
+  },
+  {
+    "question": "what is the difference between post-training quantization and quantization-aware training?",
+    "answer": "Post-training quantization (PTQ) converts a trained model to lower precision without retraining, using a small calibration dataset to determine scales. It's fast and simple — most modern LLM quantization (GPTQ, AWQ) is PTQ. Quantization-aware training (QAT) simulates quantization during training so the model learns to tolerate it, usually yielding better accuracy at low bit-widths but requiring full retraining or fine-tuning. For LLMs, PTQ is dominant because it's much cheaper and modern PTQ methods (especially with calibration on representative data) achieve quality close to QAT for INT8 and INT4. QAT may matter more at sub-4-bit precision."
+  },
+  {
+    "question": "what is model pruning?",
+    "answer": "Pruning removes redundant or low-importance weights (unstructured) or whole neurons/heads/layers (structured) from a model to reduce its size and compute. Structured pruning is more hardware-friendly because it produces dense smaller matrices; unstructured pruning needs sparse-aware kernels to actually speed up inference, which most GPUs don't accelerate well at high sparsity. Pruning can be done one-shot (after training) or iteratively (with retraining). For LLMs, pruning has had less commercial traction than quantization because gains have been smaller and harder to realize on real hardware, though recent work like SparseGPT and Wanda has revived interest."
+  },
+  {
+    "question": "what is batch inference?",
+    "answer": "Batch inference processes many inputs together in a single run, maximizing throughput and GPU utilization. It is used for offline jobs where latency is not critical, such as scoring datasets, generating embeddings for an entire corpus, or producing a leaderboard of LLM completions. Batch APIs (Anthropic, OpenAI) offer 50% discounts versus real-time because they can be scheduled during off-peak capacity. For applications with tolerant latency SLOs, batch processing can be 5-10× cheaper per token. Common batch use cases include embeddings indexing, content moderation backfills, eval runs, and scheduled summarization."
+  },
+  {
+    "question": "what is online (real-time) inference?",
+    "answer": "Online inference serves individual or small-batch requests with low latency, typically behind an API. It trades some throughput efficiency for responsiveness to interactive users. Modern serving stacks use continuous (in-flight) batching to combine multiple concurrent requests into shared forward passes — vLLM, TGI, and Triton implement this. Online inference benchmarks track p50/p95/p99 latency for both TTFT and TPOT, plus throughput and queue depth. Capacity planning is about absorbing traffic spikes within latency SLOs, which usually means provisioning extra GPUs or autoscaling."
+  },
+  {
+    "question": "what is VRAM?",
+    "answer": "VRAM is the dedicated memory on a GPU, used to hold model weights, activations, KV cache, and intermediate tensors during inference or training. Its size is often the binding constraint for running large models. Common GPUs and their VRAM: consumer RTX 4090 (24GB), datacenter A100 (40 or 80GB), H100 (80GB), H200 (141GB), B100/B200 (192GB+). For LLM inference, you need ~2 bytes per parameter in FP16 plus KV cache and overhead — a 70B model needs ~140GB just for weights, requiring multi-GPU tensor parallelism. Quantization to INT8 or INT4 reduces this proportionally and is essential for fitting large models on smaller hardware."
+  },
+  {
+    "question": "what is a TPU?",
+    "answer": "A TPU (Tensor Processing Unit) is Google's custom ASIC designed for large matrix multiplications and ML workloads. TPUs are optimized for training and serving large neural networks, especially with bfloat16. TPUs have a different programming model than GPUs (XLA-based, JAX-friendly), and most major LLMs trained at Google (PaLM, Gemini) use TPUs. TPU pods feature very high inter-chip bandwidth (ICI), making them excellent for large-scale data and tensor parallelism. They're available primarily through Google Cloud. For inference, GPU is more common in production due to ecosystem maturity, but TPU usage is growing especially for Google Cloud customers."
+  },
+  {
+    "question": "what is HBM?",
+    "answer": "High Bandwidth Memory (HBM) is a stacked DRAM technology used on modern data-center GPUs and accelerators, offering much higher bandwidth than traditional GDDR memory. HBM bandwidth is critical for memory-bound LLM inference. H100 has 3 TB/s HBM3 bandwidth; H200 raises this to 4.8 TB/s; the upcoming B100/B200 push higher still. The bandwidth difference (vs ~1 TB/s on consumer GPUs) explains why datacenter GPUs dramatically outperform consumer ones on LLM decode despite often having similar FLOP counts. HBM capacity (40-192GB) also determines what size model fits per chip."
+  },
+  {
+    "question": "what is dynamic batching in LLM serving?",
+    "answer": "Dynamic batching groups concurrent requests together at the server into a single forward pass, improving GPU utilization without users having to batch themselves. It introduces a small queuing delay in exchange for much higher throughput. The basic version waits a small window (e.g., 10-50ms) to collect concurrent requests. It works well for fixed-shape workloads but is less efficient for LLMs because requests have different sequence lengths and finish at different times. Continuous batching (described elsewhere) is the LLM-specific evolution that addresses these issues."
+  },
+  {
+    "question": "what is continuous (in-flight) batching?",
+    "answer": "Continuous batching allows new requests to join and completed requests to leave a batch at each decoding step, rather than waiting for the whole batch to finish. It substantially increases GPU utilization in LLM inference engines like vLLM, TGI, and TensorRT-LLM. Combined with PagedAttention (vLLM's KV-cache management technique), continuous batching can improve throughput 5-10× over naive serving. It's now table stakes for any serious LLM serving system. Tradeoffs include implementation complexity and some interaction with prompt caching, prefix sharing, and per-request latency variability."
+  },
+  {
+    "question": "what is data parallelism?",
+    "answer": "Data parallelism replicates the full model across devices and splits the batch across them. Each device computes gradients on its shard, and gradients are synchronized (all-reduce). It is the simplest form of parallelism and scales throughput well as long as the model fits on one device. ZeRO (DeepSpeed) and FSDP (PyTorch) extend data parallelism by sharding optimizer states, gradients, and parameters across DP ranks, reducing per-device memory while approximating data-parallel semantics. For models too large to fit on one GPU, data parallelism must be combined with tensor and/or pipeline parallelism."
+  },
+  {
+    "question": "what is tensor parallelism?",
+    "answer": "Tensor parallelism splits individual weight matrices across devices so each device holds and computes a shard of each layer. It is used when a model does not fit in one device's memory, at the cost of extra communication per layer (all-reduce or all-gather between every transformer block). Tensor parallelism is most efficient over high-bandwidth interconnects (NVLink, NVSwitch) and typically used within a single node (e.g., across 8 GPUs in one server). For multi-node parallelism, tensor parallelism within a node is combined with pipeline or data parallelism across nodes, since inter-node bandwidth is much lower."
+  },
+  {
+    "question": "what is pipeline parallelism?",
+    "answer": "Pipeline parallelism places different layers of a model on different devices, passing activations between them like an assembly line. It reduces per-device memory but can suffer pipeline bubbles (idle time) unless micro-batching is used to keep all stages busy. Pipeline parallelism has lower communication overhead than tensor parallelism (only at stage boundaries) and is often preferred for cross-node parallelism. Schedules like 1F1B (one-forward-one-backward) and interleaved schedules minimize bubbles. Modern very-large model training combines tensor parallelism within a node, pipeline parallelism across nodes, and data parallelism over the whole cluster (3D parallelism)."
+  },
+  {
+    "question": "what is the KV cache in transformer inference?",
+    "answer": "The KV cache stores the key and value tensors from past tokens so that self-attention does not recompute them at each decoding step. It turns decoding from O(n²) into O(n) work per new token, at the cost of memory proportional to sequence length × number of layers × hidden size × 2 (K and V) × precision. KV cache is often the dominant memory user during inference for long contexts, exceeding model weights. Optimizations include GQA/MQA (fewer K/V heads), KV cache quantization, paged attention (vLLM's allocator), and offloading to CPU/disk for very long contexts."
+  },
+  {
+    "question": "what is prompt caching in LLM APIs?",
+    "answer": "Prompt caching stores the model's internal state for a reused prefix (system prompt, few-shot examples, long context) so subsequent requests sharing that prefix skip its recomputation. It reduces cost and TTFT for long, repeated contexts dramatically — Anthropic, OpenAI, Google, and DeepSeek all offer prompt caching with 50-90% discounts on cached tokens. Best practices: place static content (system prompt, few-shot, RAG context) at the beginning, dynamic content (user query) at the end. Cache TTLs are short (5 minutes to 1 hour typically), so caching is most useful for high-traffic applications or batch processing."
+  },
+  {
+    "question": "what is semantic caching?",
+    "answer": "Semantic caching stores prior responses keyed by the embedding of the query, returning cached answers for semantically similar new queries. It saves cost and latency but requires careful thresholding to avoid serving stale or wrong answers. Risks include subtle query differences that imply different correct answers (account-specific queries, time-sensitive facts, numerical questions where small phrasing changes alter intent). Semantic caching is most safely applied to general-purpose queries with stable answers (FAQ-style content), and most dangerous for personalized or time-sensitive responses. Always include user/tenant scope in the cache key and consider a TTL."
+  },
+  {
+    "question": "what is a feedback loop in an ML system?",
+    "answer": "A feedback loop is the mechanism by which user interactions and outcomes are captured, curated, and used to improve future versions of the model or system. Well-designed loops are a key driver of long-term product quality. Components include event logging, attribution (which model/prompt produced what), labeling infrastructure (explicit or implicit), curation (turning raw events into training data), and a retraining/evaluation pipeline. Beware of harmful feedback loops where model outputs influence user behavior which influences future training data — recommender systems are a classic example, and the same risks apply to LLM-driven products."
+  },
+  {
+    "question": "why is feedback important in LLM applications?",
+    "answer": "LLM outputs are probabilistic and user-facing, so real usage reveals failure modes, preferences, and drift that offline evals miss. Feedback fuels evaluation, prompt iteration, fine-tuning data, and routing decisions. Without feedback, you're flying blind: offline benchmarks degrade in relevance, prompts grow stale as models update, and edge cases compound. Even simple thumbs up/down on outputs, sampled at low rate, provides signal worth orders of magnitude more than synthetic eval sets for application-specific tuning."
+  },
+  {
+    "question": "what is explicit feedback?",
+    "answer": "Explicit feedback is information users intentionally provide about outputs, such as thumbs up/down, star ratings, regenerate clicks, or textual corrections. It is clear but sparse (most users don't rate) and potentially biased toward users who care to respond — usually the ones at the extremes of satisfaction. Best collected with minimal friction (one click) and made consequential (the user sees their feedback used). For agents, asking 'did this complete your task?' at session end captures higher-quality signal than per-message ratings."
+  },
+  {
+    "question": "what is implicit feedback?",
+    "answer": "Implicit feedback is inferred from user behavior rather than explicit signals: copying an answer, clicking a link, retrying a prompt, abandoning a session, accepting a suggestion, dwelling time, follow-up questions, conversion to a paid tier. It is abundant but noisier and must be interpreted carefully — an abandoned session might mean the answer was so good the user got what they needed, or so bad they gave up. Implicit signals are also harder to attribute to specific outputs in multi-turn conversations. Combine implicit (volume) with explicit (signal) for robust feedback systems."
+  },
+  {
+    "question": "what is a data flywheel?",
+    "answer": "A data flywheel is a self-reinforcing loop where product usage generates data that improves the model, which in turn attracts more usage and more data. It is a central mechanism for building durable advantages in ML-driven products. The flywheel components are: usage → logging → curation → training → evaluation → deployment → better usage. Companies that operationalize this loop (with infrastructure, headcount, and culture) compound advantages over time. Key engineering investments are logging completeness, automated curation/labeling pipelines, eval infrastructure, and rapid retrain/redeploy cycles. The hardest part is usually labeling at scale, not training itself."
+  },
+  {
+    "question": "what is human-in-the-loop (HITL)?",
+    "answer": "Human-in-the-loop is a design pattern where humans review, correct, or approve AI outputs within the workflow. It is used to catch errors, handle edge cases, label new data, and provide oversight for high-stakes decisions. HITL can be synchronous (human approves before the action proceeds) or asynchronous (human reviews after). Common patterns: confidence-based escalation (low-confidence predictions go to human review), random sampling for QA, and active learning (humans label the most informative items). Done well, HITL improves both immediate quality and the data flywheel; done poorly, it becomes a bottleneck."
+  },
+  {
+    "question": "when is HITL especially valuable?",
+    "answer": "For high-stakes or irreversible actions (financial transactions, medical decisions, content moderation appeals), ambiguous edge cases, early deployment when confidence is low, regulatory compliance (EU AI Act, healthcare regulations), and generating high-quality training/eval data. As confidence grows, HITL can be gradually reduced — automate the easy 80%, escalate the hard 20%. The escalation policy itself is a model that needs evaluation. For AI agents that take real-world actions, HITL approval before destructive operations is a strong default until trust is established through measured safety performance."
+  },
+  {
+    "question": "what is continuous learning in ML systems?",
+    "answer": "Continuous learning is the practice of regularly updating a model with new data rather than training it once. It keeps the model aligned with shifting data distributions, user behavior, and requirements, and requires careful evaluation to avoid regressions. Patterns range from periodic full retraining (weekly/monthly) to online learning (per-example updates, rare in production). For LLM applications, the equivalent is updating prompts, RAG indexes, fine-tunes, and routing rules over time. Critical infrastructure includes versioning, automated evals on each candidate update, shadow deployment, gradual rollout, and rollback capabilities."
+  },
+  {
+    "question": "what is context window management?",
+    "answer": "Context window management decides what to include in an LLM's prompt under a finite token budget: system instructions, few-shot examples, retrieved documents, prior conversation, tool definitions, and the current user turn. Good management balances relevance, recency, and cost. Strategies include sliding-window truncation, summarization of older content, retrieval-based selection, and structured memory. Even with very large advertised context windows, real-world quality often degrades on long contexts (the 'lost in the middle' effect), so efficient context use frequently beats stuffing more in. Place the most important content at the start or end of the context, where attention is strongest."
+  },
+  {
+    "question": "what is context stuffing and what are its risks?",
+    "answer": "Context stuffing packs large amounts of information into the prompt in the hope the model will use it. Risks include: increased cost and latency (linear and quadratic effects), the 'lost in the middle' effect where middle content is under-attended, more opportunities for prompt injection from untrusted content, and overall response degradation as the model struggles to identify what's relevant. Targeted retrieval and ranking of the most relevant content typically outperforms stuffing. A good RAG system retrieves 5-20 highly relevant chunks rather than 200 marginally relevant ones, even if the context window technically fits all 200."
+  },
+  {
+    "question": "what are input guardrails?",
+    "answer": "Input guardrails screen user inputs before they reach the model, checking for PII, prompt injection patterns, disallowed topics, malformed requests, or off-policy content. They can block, sanitize, redact, or route to a different handler. Implementations include regex/rule-based filters (cheap, low-recall), classifier models (e.g., Llama Guard, NeMo Guardrails), and LLM-judge approaches (slower, higher quality). The main tradeoff is false-positive rate — overly aggressive input filtering blocks legitimate queries and harms helpfulness. Tune thresholds against a representative test set and monitor production false-positive rates."
+  },
+  {
+    "question": "what are output guardrails?",
+    "answer": "Output guardrails inspect model outputs before they reach users or downstream systems, checking for toxicity, PII leakage, schema conformance, hallucinations against sources, or policy violations. They can block, redact, or trigger regeneration with adjusted prompts. Output guardrails are generally more robust than input guardrails because they evaluate concrete content rather than potential intent. For agents, output guardrails should also inspect proposed tool calls (especially destructive ones) before execution. Common implementations include Llama Guard, dedicated classifier models, JSON-schema validators, and citation-grounded faithfulness checks."
+  },
+  {
+    "question": "what is model routing?",
+    "answer": "Model routing sends each request to the most appropriate model based on factors like task type, difficulty, cost, latency, or policy. For example, easy queries go to a small fast model while hard ones go to a larger one. Routing strategies include rule-based (regex on query type), classifier-based (small model predicts difficulty), confidence-based cascade (try cheap first, escalate if low confidence), and learned routers. Done well, routing reduces cost 5-10× while preserving quality. Implementation considerations include the routing latency itself (shouldn't add meaningful TTFT), correct fallback behavior, and avoiding routing-induced regressions on edge cases."
+  },
+  {
+    "question": "what is an LLM gateway?",
+    "answer": "An LLM gateway is a proxy layer that sits between applications and providers, offering a unified API, key management, logging, rate limiting, retries, fallbacks, cost control, and often routing. It centralizes cross-cutting concerns like observability and access control. Open-source options include LiteLLM, Portkey, Helicone, and Apache APISIX with AI plugins; commercial options include Cloudflare AI Gateway, AWS Bedrock, and various enterprise offerings. Gateways are valuable when you use multiple providers, need fine-grained cost attribution, want vendor-neutral observability, or need centralized policy enforcement across applications."
+  },
+  {
+    "question": "what is orchestration in an AI system?",
+    "answer": "Orchestration coordinates the multiple steps of an AI workflow: prompt construction, retrieval, model calls, tool use, guardrails, caching, and post-processing. Frameworks like LangChain, LlamaIndex, Haystack, DSPy, and custom pipelines implement orchestration. The key tradeoff is between framework convenience and direct control: frameworks accelerate prototyping but add abstraction layers that complicate debugging and customization. Many production teams start with a framework and gradually replace it with bespoke code as their needs solidify. Whatever the implementation, prioritize observability — without trace visibility into each step, debugging is nearly impossible."
+  },
+  {
+    "question": "what is the pipeline (chain) pattern?",
+    "answer": "In the pipeline pattern, steps are executed in a fixed sequence where each step's output feeds the next. It is simple and predictable but less flexible than agentic or DAG-based orchestrations for dynamic workflows. Pipelines work well when the workflow is deterministic and well-understood (input parsing → retrieval → reranking → generation → guardrail → output). They're easier to monitor, test, and reason about than agents. Many production systems start with a pipeline and only add agentic loops when the determinism becomes limiting — the inverse migration (agent → pipeline) is often a sign of system maturation."
+  },
+  {
+    "question": "what is jailbreaking an LLM?",
+    "answer": "Jailbreaking is coaxing an aligned LLM into producing content it is trained to refuse, via techniques like role-play, hypothetical framings, encoded instructions, multi-turn manipulation, or many-shot context manipulation. It exploits gaps in safety training and system prompts. Notable techniques include DAN-style 'pretend you have no rules' prompts, multi-turn conversation building, encoding (base64, ASCII art), and using rare languages or formats. Defenses include continued safety training, adversarial training, output filtering, and rate limiting. The arms race is ongoing — no LLM is fully jailbreak-proof, and red-teaming is a continuous discipline rather than a one-time effort."
+  },
+  {
+    "question": "what is PII?",
+    "answer": "Personally Identifiable Information (PII) is any data that can identify a specific individual, directly (name, SSN, email, phone, biometrics) or in combination with other data (birthdate + ZIP + gender, browsing history, location traces). Handling PII is regulated by laws like GDPR (EU), CCPA (California), HIPAA (US health), and many others globally. PII handling in AI systems involves: minimization (don't collect what you don't need), encryption (in transit and at rest), redaction (in logs and training data), access controls, retention limits, and deletion-on-request capabilities. PII can also be inadvertently memorized by models trained on it."
+  },
+  {
+    "question": "how can PII be detected and redacted in a pipeline?",
+    "answer": "Use regex patterns for structured PII (emails, phone numbers, SSNs, credit cards), named-entity recognition models for names, locations, and organizations, and specialized tools like Microsoft Presidio, AWS Comprehend, or Google DLP. Detected spans are masked, tokenized (replaced with consistent placeholders), or replaced with realistic but synthetic values for analytics. PII detection has known recall gaps (especially for non-Western names and unusual formats), so layered approaches and periodic auditing are needed. For LLM pipelines specifically, redact PII before logging and before sending to third-party APIs unless your contracts and DPAs explicitly cover it."
+  },
+  {
+    "question": "what is sandboxing in the context of code-executing agents?",
+    "answer": "Sandboxing runs generated or untrusted code in an isolated environment (container, VM, microVM, gVisor, WASM runtime) with restricted filesystem, network, and syscall access. It limits damage from malicious or buggy code. Common sandbox technologies for AI use cases include Firecracker microVMs (used by E2B, Modal), gVisor, Kata Containers, and lightweight options like nsjail or seccomp filters. Tradeoffs are isolation strength vs. startup latency vs. cost — agents that frequently spawn sandboxes need fast cold-start times. Always combine sandboxing with resource limits (CPU, memory, time, output size) to prevent runaway processes."
+  },
+  {
+    "question": "why is sandboxing critical for agents that execute code?",
+    "answer": "Generated code may be incorrect, insecure, or influenced by prompt injection. Without sandboxing, it can exfiltrate data, consume resources, modify host filesystems, or compromise other workloads. Real-world examples include agents that read files outside their scope, make unauthorized network calls, or hang on infinite loops. Sandboxing bounds the blast radius of any such failure. Network egress restrictions are particularly important — many attacks rely on calling out to attacker-controlled servers, so default-deny network policies (with explicit allowlists) significantly raise the bar."
+  },
+  {
+    "question": "what is a memorization attack on a language model?",
+    "answer": "A memorization attack extracts specific training data from a model, often via crafted prompts that trigger verbatim regurgitation. Large models can memorize rare training examples, posing privacy and copyright risks. Notable techniques include divergence attacks (forcing the model to repeat content), prompting with partial strings, and extracting via patterns. The risk scales with: training data duplication, model size, training compute, and the specificity of the memorized content. Mitigations include training-data deduplication, differential privacy (with significant capability tradeoffs), output filtering, and limiting training to licensed or low-sensitivity content."
+  },
+  {
+    "question": "what is training data extraction?",
+    "answer": "Training data extraction is the process of recovering samples from a model's training set by querying the model. It has been demonstrated on large LLMs (Carlini et al. 2021, 2023) and is a motivation for deduplication, differential privacy, and careful data governance. Extracted data has included PII, copyrighted text, and even keys/credentials accidentally committed to training corpora. The risk is highest for sequences that appear multiple times in training — duplicates are remembered with disproportionate fidelity. For safety-critical applications, assume any sufficiently long passage that appears in training may be extractable in principle."
+  },
+  {
+    "question": "what is GDPR?",
+    "answer": "The General Data Protection Regulation is the European Union's data protection law (in effect since 2018), governing how personal data of EU residents is collected, processed, stored, and transferred. It applies to organizations worldwide if they handle EU residents' data, with fines up to 4% of global revenue. Key principles include lawful basis for processing, data minimization, purpose limitation, accuracy, storage limitation, security, and accountability. For AI systems: training on personal data requires lawful basis, automated decision-making has special rules (Article 22), data subject access/erasure rights apply, and cross-border transfers need safeguards. Many AI providers offer EU-resident data processing for compliance."
+  },
+  {
+    "question": "what is the 'right to be forgotten'?",
+    "answer": "Under GDPR Article 17, individuals can request erasure of their personal data in certain circumstances (no longer needed, withdrawal of consent, unlawful processing). For ML, this raises hard questions about removing a person's data's influence from trained models, sometimes requiring retraining or 'machine unlearning' techniques. Practical responses range from removing data from databases and indexes (straightforward) to retraining models without the data (expensive) to approximate unlearning techniques (research-stage). Most AI providers handle this by removing data from logs and future training but cannot fully reverse the influence on already-trained models — this is a genuine tension between AI economics and GDPR compliance."
+  },
+  {
+    "question": "what are copyright implications of training AI on copyrighted data?",
+    "answer": "Training on copyrighted works without permission is legally contested, with active litigation worldwide (NYT v. OpenAI, Authors Guild v. Microsoft, Getty v. Stability AI, music labels v. Suno/Udio). Outputs that reproduce substantial portions of training works may infringe even if training itself is later ruled fair use. Mitigations include: licensing training data (some labs now do this), filtering out copyrighted/restricted content, opt-out mechanisms (robots.txt extensions), output similarity checks, and indemnification policies. The legal landscape varies by jurisdiction (US fair use, EU TDM exceptions, UK pending). Enterprise AI procurement increasingly demands indemnification covering copyright claims."
+  },
+  {
+    "question": "what is algorithmic bias?",
+    "answer": "Algorithmic bias is systematic unfair treatment of individuals or groups by an AI system, typically reflecting biases in training data, labels, sampling, problem formulation, or design choices. It can cause real harm in areas like hiring, lending, healthcare, criminal justice, and content moderation. Famous examples include facial recognition with higher error rates on darker skin tones, hiring algorithms that penalized resumes with women's college names, and medical algorithms that allocated less care to Black patients. Bias auditing is increasingly required (EEOC guidance, NYC Local Law 144, EU AI Act). Mitigation requires intervention across data, model, and deployment, not just post-hoc statistical tweaks."
+  },
+  {
+    "question": "what is fairness in machine learning?",
+    "answer": "Fairness is the property that an ML system treats individuals or groups equitably by some defined criterion. There are multiple formal definitions: demographic parity (equal positive rates across groups), equalized odds (equal TPR and FPR), calibration, individual fairness (similar individuals get similar predictions), counterfactual fairness, and many more. Some of these are mathematically incompatible — you cannot satisfy them all simultaneously when base rates differ across groups (the 'impossibility theorem' of fairness). Choosing which fairness criterion to prioritize is a normative decision, not a technical one, and should be informed by domain context and stakeholder input."
+  },
+  {
+    "question": "what is responsible AI?",
+    "answer": "Responsible AI is the practice of designing, developing, and deploying AI systems in ways that are safe, fair, transparent, accountable, privacy-respecting, and aligned with human values and laws. It spans technical practices (red-teaming, evaluation, guardrails), organizational practices (review boards, policies, training), and governance (regulations, audits, standards). Major AI labs publish responsible AI principles and policies (Anthropic's Acceptable Use Policy and RSP, OpenAI's Usage Policies, Google's AI Principles). Increasingly, responsible AI is also a regulatory matter — the EU AI Act, NYC Local Law 144, Colorado SB205, and others codify specific requirements."
+  },
+  {
+    "question": "what is temperature in LLM generation?",
+    "answer": "Temperature scales the logits before softmax: values below 1 make the distribution sharper (more deterministic), above 1 flatten it (more random). Temperature 0 corresponds to greedy decoding. Temperature affects output diversity and surprise, often described loosely as 'creativity,' but at the cost of coherence and factuality. Common settings: 0 for deterministic structured output, 0.2-0.5 for code generation, 0.7-1.0 for chat, higher for brainstorming. Note that 'temperature 0' is not fully deterministic across runs due to non-associative GPU floating point — true determinism requires fixed seeds and consistent batching."
+  },
+  {
+    "question": "what is Retrieval-Augmented Generation (RAG)?",
+    "answer": "RAG augments an LLM's input with relevant documents retrieved from an external corpus at query time. This improves factual grounding, allows the model to use up-to-date and proprietary data, and reduces hallucinations when implemented well. RAG is often preferable to fine-tuning for knowledge-intensive tasks because facts can change without retraining, citations can be provided, and the corpus can scale beyond what fits in any model's parameters. The basic architecture (retrieve top-k, stuff into prompt, generate) has many refinements: query rewriting, hybrid search, reranking, multi-hop retrieval, agentic search, and verification. RAG quality is highly sensitive to chunking and retrieval, not just the generator model."
+  },
+  {
+    "question": "what are the main components of a RAG system?",
+    "answer": "A document ingestion pipeline (parsing, chunking, embedding, indexing), a retriever (dense and/or sparse), an optional reranker, a prompt template that injects retrieved context, and the generator LLM. Evaluation and monitoring wrap around the whole system. Production RAG systems also include: query understanding (rewriting, expansion, classification), metadata filtering for tenancy and freshness, citation generation and verification, fallback strategies for when retrieval fails, and feedback collection. The most common quality issues are at the ingestion stage (bad chunking, missing metadata) rather than the generator — so invest in evaluation that measures each component, not just end-to-end quality."
+  }
+]

@@ -8,6 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    let questions: [InterviewQuestion] = {
+        guard let url = Bundle.main.url(forResource: "ai_engineering_qna", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([InterviewQuestion].self, from: data) else {
+            return []
+        }
+        return decoded
+    }()
+    
     var body: some View {
         TabView {
             Tab("Study", systemImage: "book.fill") {
@@ -16,6 +25,10 @@ struct ContentView: View {
 
             Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill") {
                 ChatView()
+            }
+            
+            Tab("Quiz", systemImage: "questionmark.circle") {
+                QuizView(questions: questions)
             }
 
             Tab("Info", systemImage: "info.circle.fill") {
