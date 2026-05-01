@@ -42,6 +42,16 @@ struct ExplainView: View {
                 } else if !explanation.isEmpty {
                     Text(LocalizedStringKey(explanation))
                         .font(.body)
+
+                    Button {
+                        Task { await generateExplanation() }
+                    } label: {
+                        Text("Retry")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
             }
             .padding()

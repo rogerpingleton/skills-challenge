@@ -24,6 +24,7 @@ struct InfoView: View {
                     Label("Study checklists for AI skill areas", systemImage: "checklist")
                     Label("Track your learning progress", systemImage: "chart.bar.fill")
                     Label("Chat with an on-device AI assistant", systemImage: "bubble.left.and.bubble.right.fill")
+                    Label("Quiz yourself on AI concepts", systemImage: "brain.head.profile")
                 }
 
                 Section("Technology") {
@@ -34,7 +35,7 @@ struct InfoView: View {
 
                 Section("Credits") {
                     Label {
-                        Text("Developed by Roger Pingleton for [StreamSide AI](https://www.streamside.ai).")
+                        Text("Developed by [Roger Pingleton](https://www.rogerpingleton.com) for [StreamSide AI](https://www.streamside.ai).")
                     } icon: {
                         Image("StreamSideAILogo")
                             .resizable()

@@ -27,7 +27,7 @@ struct ContentView: View {
                 ChatView()
             }
             
-            Tab("Quiz", systemImage: "questionmark.circle") {
+            Tab("Quiz", systemImage: "brain.head.profile") {
                 QuizView(questions: questions)
             }
 
