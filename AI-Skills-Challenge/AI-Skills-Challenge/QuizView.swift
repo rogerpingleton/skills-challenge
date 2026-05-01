@@ -79,6 +79,18 @@ struct QuizView: View {
             .controlSize(.large)
             .padding(.horizontal)
             .padding(.bottom)
+            
+            NavigationLink {
+                ReviewQuestionView(questions: questions)
+            } label: {
+                Text("Study First")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .padding(.horizontal)
+            .padding(.bottom)
         }
     }
 
