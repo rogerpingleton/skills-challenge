@@ -15,11 +15,15 @@ The suggested generated subject matter is stored in a separate repository: https
 - A micro-RAG system which assesses answers and compares data via an on-device embedding model and on-device vector database
 - Ability to question the database of training material (with limited context)
 
-### Stage 2
+### Stage 2/3
 - Ability to allow the user to be quized on specific topics.
+- All answers are essay and judged on-device by Apple FM, which incorporates teach to learn mechanic
+- Users can study the question/answer set ahead of time
+- If a user doesn't understand a question, they can ask for an AI-generated simplification
+- If simplification is still too complex, the user can tap "Retry" to generate a new simplification
 
 ### Stage 3
-- Ability to allow the user create their own explanation of what the subject matter entails in a "teach to learn" methodology.
+- Fallback system to meet Apple's requirements for Apple Intelligence
 
 ## Challenges:
 
