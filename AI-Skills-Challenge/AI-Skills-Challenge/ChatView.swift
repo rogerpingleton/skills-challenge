@@ -6,6 +6,7 @@
 import SwiftUI
 import NaturalLanguage
 import FoundationModels
+import MarkdownView
 
 struct ChatMessage: Identifiable {
     let id = UUID()
@@ -192,7 +193,7 @@ struct MessageBubble: View {
         HStack {
             if message.role == .user { Spacer() }
 
-            Text(message.text)
+            MarkdownView(message.text.markdownWithTablesConverted)
                 .padding(12)
                 .background(message.role == .user ? Color("AccentColor") : Color(.systemGray5))
                 .foregroundStyle(message.role == .user ? .white : .primary)

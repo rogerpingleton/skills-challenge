@@ -47,6 +47,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Controllers/BruteForceRetriever.swift,
+				Controllers/MarkdownTableConverter.swift,
 				Controllers/RAGSystem.swift,
 				Controllers/VectorStoreLoader.swift,
 				Models/VectorStore.swift,
