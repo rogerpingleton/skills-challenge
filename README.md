@@ -11,7 +11,7 @@ The suggested generated subject matter is stored in a separate repository: https
 
 ## Features:
 
-### Stage 1 (current stage)
+### Stage 1
 - A micro-RAG system which assesses answers and compares data via an on-device embedding model and on-device vector database
 - Ability to question the database of training material (with limited context)
 
@@ -22,7 +22,7 @@ The suggested generated subject matter is stored in a separate repository: https
 - If a user doesn't understand a question, they can ask for an AI-generated simplification
 - If simplification is still too complex, the user can tap "Retry" to generate a new simplification
 
-### Stage 3
+### Stage 3 (current stage)
 - Fallback system to meet Apple's requirements for Apple Intelligence
 
 ## Challenges:
