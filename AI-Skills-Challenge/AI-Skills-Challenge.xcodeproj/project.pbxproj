@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B82A5DD2F969E1C00DC4390 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B82A5DC2F969E1C00DC4390 /* libsqlite3.tbd */; };
 		0BC34A2B2F978FBD00D1D49C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BC34A2A2F978FBD00D1D49C /* libsqlite3.tbd */; };
+		0BC34C222FA5509A00D1D49C /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = 0BC34C212FA5509A00D1D49C /* MarkdownView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BC34C222FA5509A00D1D49C /* MarkdownView in Frameworks */,
 				0B82A5DD2F969E1C00DC4390 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -210,6 +212,7 @@
 			);
 			name = "AI-Skills-Challenge";
 			packageProductDependencies = (
+				0BC34C212FA5509A00D1D49C /* MarkdownView */,
 			);
 			productName = "AI-Skills-Challenge";
 			productReference = 0BCAF6742F8FE57800F1B73A /* AI-Skills-Challenge.app */;
@@ -247,6 +250,9 @@
 			);
 			mainGroup = 0BCAF66B2F8FE57800F1B73A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0BC34C202FA5509A00D1D49C /* XCRemoteSwiftPackageReference "MarkdownView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0BCAF6752F8FE57800F1B73A /* Products */;
 			projectDirPath = "";
@@ -612,6 +618,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0BC34C202FA5509A00D1D49C /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LiYanan2004/MarkdownView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0BC34C212FA5509A00D1D49C /* MarkdownView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BC34C202FA5509A00D1D49C /* XCRemoteSwiftPackageReference "MarkdownView" */;
+			productName = MarkdownView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0BCAF66C2F8FE57800F1B73A /* Project object */;
 }

@@ -83,3 +83,12 @@ The suggested generated subject matter is stored in a separate repository: https
 ```
 git clone https://github.com/rogerpingleton/skills-challenge.git
 ```
+
+### Swift Package Dependencies
+
+After cloning, open the Xcode project and add the following Swift Package dependency:
+
+1. In Xcode, go to **File > Add Package Dependencies...**
+2. Enter the package URL: `https://github.com/LiYanan2004/MarkdownView`
+3. Set the dependency rule to **Up to Next Major Version** with minimum version **2.6.1**
+4. Click **Add Package**, ensure **MarkdownView** is selected and the target is **AI-Skills-Challenge**, then click **Add Package**
