@@ -35,7 +35,7 @@ struct ExplainView: View {
                     } description: {
                         Text(error)
                     } actions: {
-                        Button("Try Again") {
+                        Button("Try Again", systemImage: "sparkles") {
                             Task { await generateExplanation() }
                         }
                     }
@@ -46,7 +46,7 @@ struct ExplainView: View {
                     Button {
                         Task { await generateExplanation() }
                     } label: {
-                        Text("Retry")
+                        Text("\(Image(systemName: "sparkles")) Retry")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                     }
