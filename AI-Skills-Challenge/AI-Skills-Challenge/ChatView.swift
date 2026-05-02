@@ -20,7 +20,7 @@ struct ChatMessage: Identifiable {
 }
 
 struct ChatView: View {
-    @State private var messages: [ChatMessage] = []
+    @State private var messages: [ChatMessage] = [ChatMessage(role: .assistant, text: "Ask an AI engineering question, and I'll do my best to help! _Note:_ Each new question creates a new session (so I don't remember what is in your previous question), and please understand that sometimes I get answers wrong.")]
     @State private var inputText = ""
     @State private var isGenerating = false
     @State private var ragSystem: RAGSystem?
@@ -166,6 +166,7 @@ struct ChatView: View {
     }
 
     private func sendMessage() {
+        messages = []
         let userText = inputText.trimmingCharacters(in: .whitespaces)
         guard !userText.isEmpty, let rag = ragSystem else { return }
         inputText = ""

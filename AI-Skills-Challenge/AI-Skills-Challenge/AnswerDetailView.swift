@@ -15,7 +15,7 @@ struct AnswerDetailView: View {
                 NavigationLink {
                     ExplainView(question: question)
                 } label: {
-                    Text("Explain")
+                    Label("Explain", systemImage: "sparkles")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
